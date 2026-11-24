@@ -1,0 +1,601 @@
+{
+  "meta": {
+    "versions": {
+      "python": "3.14.0",
+      "pandas": "3.0.3",
+      "numpy": "2.4.6",
+      "sklearn": "1.9.0",
+      "matplotlib": "3.11.2",
+      "seaborn": "0.13.2"
+    },
+    "cv": "StratifiedKFold(5, shuffle=True, random_state=42)",
+    "metric": "Accuracy",
+    "note": "All values measured in-session; experiment_results.json untouched."
+  },
+  "verification": {
+    "recomputed_rf_mean": 0.843977151465696,
+    "saved_best_cv": 0.843977151465696,
+    "match_within_1e-9": true
+  },
+  "fold_analysis": {
+    "rf": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262
+    },
+    "gb": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8258426966292135,
+        0.8258426966292135,
+        0.8651685393258427
+      ],
+      "mean": 0.8428535559600778,
+      "std": 0.016826493362689092,
+      "min": 0.8258426966292135,
+      "max": 0.8651685393258427
+    },
+    "hgb": {
+      "folds": [
+        0.8435754189944135,
+        0.8539325842696629,
+        0.8146067415730337,
+        0.8426966292134831,
+        0.8539325842696629
+      ],
+      "mean": 0.8417487916640513,
+      "std": 0.014407050017825017,
+      "min": 0.8146067415730337,
+      "max": 0.8539325842696629
+    }
+  },
+  "tuned": {
+    "gb": {
+      "best_cv": 0.8428535559600778,
+      "best_params": {
+        "model__learning_rate": 0.1,
+        "model__max_depth": 2,
+        "model__n_estimators": 300,
+        "model__subsample": 0.8
+      }
+    },
+    "hgb": {
+      "best_cv": 0.8417487916640513,
+      "best_params": {
+        "model__l2_regularization": 1.0,
+        "model__learning_rate": 0.05,
+        "model__max_depth": 5,
+        "model__max_leaf_nodes": 15
+      }
+    }
+  },
+  "stability": [
+    {
+      "model": "Gradient Boosting",
+      "kind": "untuned",
+      "mean": 0.8406000878789781,
+      "std": 0.0138513101215318
+    },
+    {
+      "model": "Logistic Regression",
+      "kind": "untuned",
+      "mean": 0.8282781997363632,
+      "std": 0.0157751345521236
+    },
+    {
+      "model": "Hist Gradient Boosting",
+      "kind": "untuned",
+      "mean": 0.8260121775155357,
+      "std": 0.0245171661878941
+    },
+    {
+      "model": "Random Forest",
+      "kind": "untuned",
+      "mean": 0.8091707990709937,
+      "std": 0.0229776118550206
+    },
+    {
+      "model": "Decision Tree",
+      "kind": "untuned",
+      "mean": 0.7901136149645345,
+      "std": 0.0305439768589455
+    },
+    {
+      "model": "Majority Baseline",
+      "kind": "untuned",
+      "mean": 0.6161634548992531,
+      "std": 0.0023249236391277
+    },
+    {
+      "model": "Random Forest",
+      "kind": "tuned",
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262
+    },
+    {
+      "model": "Gradient Boosting",
+      "kind": "tuned",
+      "mean": 0.8428535559600778,
+      "std": 0.016826493362689092,
+      "min": 0.8258426966292135,
+      "max": 0.8651685393258427
+    },
+    {
+      "model": "Hist Gradient Boosting",
+      "kind": "tuned",
+      "mean": 0.8417487916640513,
+      "std": 0.014407050017825017,
+      "min": 0.8146067415730337,
+      "max": 0.8539325842696629
+    }
+  ],
+  "ablation": [
+    {
+      "id": "A",
+      "label": "A - Raw baseline",
+      "n_numeric": 4,
+      "n_categorical": 3,
+      "cv_mean": 0.8394827694432239,
+      "cv_std": 0.017081089343750883,
+      "folds": [
+        0.8603351955307262,
+        0.8426966292134831,
+        0.8146067415730337,
+        0.8258426966292135,
+        0.8539325842696629
+      ],
+      "delta_vs_baseline": 0.0,
+      "group_added": "Raw baseline (Age, Fare, SibSp, Parch, Pclass, Sex, Embarked; no engineered features)",
+      "features_added_numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch"
+      ],
+      "features_added_categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked"
+      ],
+      "delta_vs_previous": null
+    },
+    {
+      "id": "B",
+      "label": "B - + Family",
+      "n_numeric": 6,
+      "n_categorical": 4,
+      "cv_mean": 0.8372418555018518,
+      "cv_std": 0.013963445965081032,
+      "folds": [
+        0.8547486033519553,
+        0.8314606741573034,
+        0.8146067415730337,
+        0.8370786516853933,
+        0.848314606741573
+      ],
+      "delta_vs_baseline": -0.002240913941372047,
+      "group_added": "Family (FamilySize, IsAlone, FamilySizeCategory)",
+      "features_added_numeric": [
+        "FamilySize",
+        "IsAlone"
+      ],
+      "features_added_categorical": [
+        "FamilySizeCategory"
+      ],
+      "delta_vs_previous": -0.002240913941372047
+    },
+    {
+      "id": "C",
+      "label": "C - + Title",
+      "n_numeric": 6,
+      "n_categorical": 5,
+      "cv_mean": 0.838359173937606,
+      "cv_std": 0.01809600313965567,
+      "folds": [
+        0.8603351955307262,
+        0.8202247191011236,
+        0.8146067415730337,
+        0.8426966292134831,
+        0.8539325842696629
+      ],
+      "delta_vs_baseline": -0.0011235955056179137,
+      "group_added": "Title (Title extracted from Name)",
+      "features_added_numeric": [],
+      "features_added_categorical": [
+        "Title"
+      ],
+      "delta_vs_previous": 0.0011173184357541333
+    },
+    {
+      "id": "D",
+      "label": "D - + Ticket groups",
+      "n_numeric": 7,
+      "n_categorical": 5,
+      "cv_mean": 0.8394827694432239,
+      "cv_std": 0.018155925175450234,
+      "folds": [
+        0.8603351955307262,
+        0.8314606741573034,
+        0.8089887640449438,
+        0.8426966292134831,
+        0.8539325842696629
+      ],
+      "delta_vs_baseline": 0.0,
+      "group_added": "Ticket groups (TicketGroupSize)",
+      "features_added_numeric": [
+        "TicketGroupSize"
+      ],
+      "features_added_categorical": [],
+      "delta_vs_previous": 0.0011235955056179137
+    },
+    {
+      "id": "E",
+      "label": "E - + Fare per person",
+      "n_numeric": 8,
+      "n_categorical": 5,
+      "cv_mean": 0.8338836231247255,
+      "cv_std": 0.022712217027195798,
+      "folds": [
+        0.8435754189944135,
+        0.8314606741573034,
+        0.7921348314606742,
+        0.8426966292134831,
+        0.8595505617977528
+      ],
+      "delta_vs_baseline": -0.005599146318498338,
+      "group_added": "Fare per person (FarePerPerson)",
+      "features_added_numeric": [
+        "FarePerPerson"
+      ],
+      "features_added_categorical": [],
+      "delta_vs_previous": -0.005599146318498338
+    },
+    {
+      "id": "F",
+      "label": "F - + Cabin",
+      "n_numeric": 9,
+      "n_categorical": 6,
+      "cv_mean": 0.843977151465696,
+      "cv_std": 0.01412286875015432,
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "delta_vs_baseline": 0.004494382022472099,
+      "group_added": "Cabin (CabinDeck, CabinKnown)",
+      "features_added_numeric": [
+        "CabinKnown"
+      ],
+      "features_added_categorical": [
+        "CabinDeck"
+      ],
+      "delta_vs_previous": 0.010093528340970437
+    },
+    {
+      "id": "G",
+      "label": "G - Final (+ Mother)",
+      "n_numeric": 10,
+      "n_categorical": 6,
+      "cv_mean": 0.843977151465696,
+      "cv_std": 0.01412286875015432,
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "delta_vs_baseline": 0.004494382022472099,
+      "group_added": "Final (Mother)",
+      "features_added_numeric": [
+        "Mother"
+      ],
+      "features_added_categorical": [],
+      "delta_vs_previous": 0.0
+    }
+  ],
+  "oof_proba_stats": {
+    "mean": 0.3915996197063404,
+    "std": 0.35822205472891633,
+    "frac_uncertain_04_06": 0.08080808080808081,
+    "frac_confident_died_lt02": 0.46464646464646464,
+    "frac_confident_survived_gt08": 0.2222222222222222
+  },
+  "test_proba_stats": {
+    "mean": 0.40761051188240605,
+    "std": 0.3624254608141893,
+    "frac_uncertain_04_06": 0.0645933014354067,
+    "frac_lt02": 0.4473684210526316,
+    "frac_gt08": 0.2583732057416268,
+    "n_predicted_survived": 155,
+    "n_total": 418
+  },
+  "subgroups": {
+    "Sex": [
+      {
+        "Sex": "female",
+        "samples": 314,
+        "accuracy": 0.8184713375796179,
+        "survival_rate": 0.7420382165605095,
+        "n_correct": 257,
+        "n_errors": 57
+      },
+      {
+        "Sex": "male",
+        "samples": 577,
+        "accuracy": 0.8578856152512998,
+        "survival_rate": 0.18890814558058924,
+        "n_correct": 495,
+        "n_errors": 82
+      }
+    ],
+    "Pclass": [
+      {
+        "Pclass": "3",
+        "samples": 491,
+        "accuracy": 0.824847250509165,
+        "survival_rate": 0.24236252545824846,
+        "n_correct": 405,
+        "n_errors": 86
+      },
+      {
+        "Pclass": "1",
+        "samples": 216,
+        "accuracy": 0.8287037037037037,
+        "survival_rate": 0.6296296296296297,
+        "n_correct": 179,
+        "n_errors": 37
+      },
+      {
+        "Pclass": "2",
+        "samples": 184,
+        "accuracy": 0.9130434782608695,
+        "survival_rate": 0.47282608695652173,
+        "n_correct": 168,
+        "n_errors": 16
+      }
+    ],
+    "Title": [
+      {
+        "Title": "Rare",
+        "samples": 23,
+        "accuracy": 0.7391304347826086,
+        "survival_rate": 0.34782608695652173,
+        "n_correct": 17,
+        "n_errors": 6
+      },
+      {
+        "Title": "Miss",
+        "samples": 185,
+        "accuracy": 0.8162162162162162,
+        "survival_rate": 0.7027027027027027,
+        "n_correct": 151,
+        "n_errors": 34
+      },
+      {
+        "Title": "Mrs",
+        "samples": 126,
+        "accuracy": 0.8253968253968254,
+        "survival_rate": 0.7936507936507936,
+        "n_correct": 104,
+        "n_errors": 22
+      },
+      {
+        "Title": "Mr",
+        "samples": 517,
+        "accuracy": 0.8549323017408124,
+        "survival_rate": 0.15667311411992263,
+        "n_correct": 442,
+        "n_errors": 75
+      },
+      {
+        "Title": "Master",
+        "samples": 40,
+        "accuracy": 0.95,
+        "survival_rate": 0.575,
+        "n_correct": 38,
+        "n_errors": 2
+      }
+    ],
+    "CabinKnown": [
+      {
+        "CabinKnown": 1,
+        "samples": 204,
+        "accuracy": 0.8137254901960784,
+        "survival_rate": 0.6666666666666666,
+        "n_correct": 166,
+        "n_errors": 38
+      },
+      {
+        "CabinKnown": 0,
+        "samples": 687,
+        "accuracy": 0.8529839883551674,
+        "survival_rate": 0.29985443959243085,
+        "n_correct": 586,
+        "n_errors": 101
+      }
+    ],
+    "AgeGroup": [
+      {
+        "AgeGroup": "Teen",
+        "samples": 70,
+        "accuracy": 0.8,
+        "survival_rate": 0.42857142857142855,
+        "n_correct": 56,
+        "n_errors": 14
+      },
+      {
+        "AgeGroup": "Senior",
+        "samples": 26,
+        "accuracy": 0.8076923076923077,
+        "survival_rate": 0.2692307692307692,
+        "n_correct": 21,
+        "n_errors": 5
+      },
+      {
+        "AgeGroup": "Adult",
+        "samples": 549,
+        "accuracy": 0.8360655737704918,
+        "survival_rate": 0.3879781420765027,
+        "n_correct": 459,
+        "n_errors": 90
+      },
+      {
+        "AgeGroup": "Unknown",
+        "samples": 177,
+        "accuracy": 0.8700564971751412,
+        "survival_rate": 0.2937853107344633,
+        "n_correct": 154,
+        "n_errors": 23
+      },
+      {
+        "AgeGroup": "Child",
+        "samples": 69,
+        "accuracy": 0.8985507246376812,
+        "survival_rate": 0.5797101449275363,
+        "n_correct": 62,
+        "n_errors": 7
+      }
+    ],
+    "FamilySizeCategory": [
+      {
+        "FamilySizeCategory": "Small",
+        "samples": 292,
+        "accuracy": 0.8253424657534246,
+        "survival_rate": 0.5787671232876712,
+        "n_correct": 241,
+        "n_errors": 51
+      },
+      {
+        "FamilySizeCategory": "Alone",
+        "samples": 537,
+        "accuracy": 0.845437616387337,
+        "survival_rate": 0.30353817504655495,
+        "n_correct": 454,
+        "n_errors": 83
+      },
+      {
+        "FamilySizeCategory": "Large",
+        "samples": 62,
+        "accuracy": 0.9193548387096774,
+        "survival_rate": 0.16129032258064516,
+        "n_correct": 57,
+        "n_errors": 5
+      }
+    ],
+    "FareQuartile": [
+      {
+        "FareQuartile": "Q2",
+        "samples": 224,
+        "accuracy": 0.8125,
+        "survival_rate": 0.30357142857142855,
+        "n_correct": 182,
+        "n_errors": 42
+      },
+      {
+        "FareQuartile": "Q3",
+        "samples": 222,
+        "accuracy": 0.8288288288288288,
+        "survival_rate": 0.45495495495495497,
+        "n_correct": 184,
+        "n_errors": 38
+      },
+      {
+        "FareQuartile": "Q4-high",
+        "samples": 222,
+        "accuracy": 0.8648648648648649,
+        "survival_rate": 0.581081081081081,
+        "n_correct": 192,
+        "n_errors": 30
+      },
+      {
+        "FareQuartile": "Q1-low",
+        "samples": 223,
+        "accuracy": 0.8699551569506726,
+        "survival_rate": 0.19730941704035873,
+        "n_correct": 194,
+        "n_errors": 29
+      }
+    ]
+  },
+  "redundancy": {
+    "p_female_given_title": {
+      "Master": 0.0,
+      "Miss": 1.0,
+      "Mr": 0.0,
+      "Mrs": 1.0,
+      "Rare": 0.13043478260869565
+    },
+    "pearson_fare_fareperperson": 0.8390366209250053,
+    "pearson_familysize_sibsp": 0.890711671869885,
+    "pearson_familysize_parch": 0.7831107750000581
+  },
+  "leakage": {
+    "checks": [
+      {
+        "id": "L1",
+        "name": "Target never a model input",
+        "passed": true,
+        "evidence": "model inputs=16 cols; 'Survived' in DROP_COLUMNS=True"
+      },
+      {
+        "id": "L2",
+        "name": "PassengerId never a model input",
+        "passed": true,
+        "evidence": "'PassengerId' in DROP_COLUMNS=True; not in numeric/categorical lists"
+      },
+      {
+        "id": "L3",
+        "name": "No target reference in feature-engineering code",
+        "passed": true,
+        "evidence": "code-level references to 'Survived' in src/feature_engineering.py (docstrings/comments excluded): 0"
+      },
+      {
+        "id": "L4",
+        "name": "Preprocessing inside CV folds (Pipeline order)",
+        "passed": true,
+        "evidence": "steps=['features', 'preprocess', 'model']; OneHotEncoder(handle_unknown='ignore')"
+      },
+      {
+        "id": "L5",
+        "name": "Test set carries no labels",
+        "passed": true,
+        "evidence": "test columns=['PassengerId', 'Pclass', 'Name', 'Sex', 'Age', 'SibSp', 'Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked']"
+      },
+      {
+        "id": "L6",
+        "name": "PassengerId permutation importance is 0.0",
+        "passed": true,
+        "evidence": "measured importance_mean=0.0"
+      },
+      {
+        "id": "L7",
+        "name": "Group features use records only, no labels",
+        "passed": true,
+        "evidence": "ticket '347082': count fit-on-all=7 vs fit-on-first-200=2; unseen ticket maps to 1; TitanicFeatureEngineer.fit signature=(self, X: 'pd.DataFrame', y: 'pd.Series | None' = None) -> \"'TitanicFeatureEngineer'\" (y unused)"
+      }
+    ],
+    "all_passed": true
+  },
+  "kaggle": {
+    "score": 0.75358,
+    "status": "RECORDED_PUBLIC_LEADERBOARD",
+    "gap_vs_best_cv_pp": 9.042,
+    "gap_note": "84.40 - 75.358 at display precision. External evaluation only; never tuned against, never used for any modeling decision.",
+    "instruction": "Submitted file: submissions/submission.csv (418 rows, 155 survivors). No further uploads driven by this investigation."
+  }
+}

@@ -1,0 +1,604 @@
+{
+  "worker": "R3D",
+  "question": "Does any estimator beat RF on ticket AND surname AND family-ticket simultaneously? (ticket-group flip LR>HGB>GB>RF possibly ticket-quirk)",
+  "reference_reused": {
+    "RF_random_mean": 0.843977151465696,
+    "GB_random_mean": 0.8428535559600778,
+    "HGB_random_mean": 0.8417487916640513,
+    "LR_random_mean": 0.8282781997363632,
+    "RF_brier": 0.12402,
+    "note": "Random means reused, NOT recomputed; Brier RF reused as tie-break only. No random-CV recompute, no test labels used/inferred."
+  },
+  "protocol": {
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden \u2014 never used/inferred",
+    "groups": {
+      "G1_ticket": "Ticket.astype(str).str.strip()",
+      "G2_surname": "Name.str.split(',').str[0].str.strip()",
+      "G3_famticket": "G2 + '|' + G1"
+    },
+    "group_counts": {
+      "ticket": 681,
+      "surname": 667,
+      "famticket": 739
+    },
+    "group_note": "Groupings from train records only (no labels). G1 681 groups reproduces prior ticket work; G2 667 matches prior surname count; G3 739 matches prior count but uses '|' per R3D spec vs prior '__' \u2014 identical partition, different label sort order changes shuffled fold assignment (verified: same 739-group size distribution, different fold indices). All 4 estimators share identical precomputed fold indices per grouping (fair paired folds).",
+    "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) per grouping; identical indices reused for all estimators",
+    "splitter_signature_verified": "(n_splits=5, shuffle=False, random_state=None)",
+    "sklearn": "1.9.0",
+    "builders": {
+      "RF": "build_full_pipeline(RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1), scale_numeric=False)",
+      "GB": "build_full_pipeline(GradientBoostingClassifier(learning_rate=0.1, max_depth=2, n_estimators=300, subsample=0.8, random_state=42), scale_numeric=False) \u2014 params stripped of model__ prefix from tuning_top3.json",
+      "HGB": "build_full_pipeline(HistGradientBoostingClassifier(l2_regularization=1.0, learning_rate=0.05, max_depth=5, max_leaf_nodes=15, random_state=42), scale_numeric=False) \u2014 params from tuning_top3.json",
+      "LR": "build_pipeline_with_features(LogisticRegression(C=0.5, max_iter=1000, random_state=42), numeric=[Age,Fare,SibSp,Parch,FamilySize,IsAlone,TicketGroupSize,FarePerPerson,CabinKnown,Mother], categorical=[Pclass,Sex,Embarked,Title,CabinDeck,FamilySizeCategory]) + StandardScaler appended after imputer in numeric branch to honor scale_numeric=True (same method as gap_robustness/gap2_e1); config column order preserved"
+    },
+    "scoring": "accuracy",
+    "std_convention": "population ddof=0 (std_sample ddof=1 also recorded; paired-t uses ddof=1)",
+    "paired_t_def": "pooled: 15 diffs (5 folds x 3 groupings, challenger-RF on identical folds); t = mean(diff)/(std_sample(diff)/sqrt(15)). Per-grouping: 5 diffs, t = mean/(std_sample/sqrt(5)).",
+    "stacking": "excluded (prior: tied vote at ~25x cost)",
+    "elapsed_s": 90.2
+  },
+  "matrix_mean_std": {
+    "RF": {
+      "ticket": {
+        "mean": 0.7990811362702218,
+        "std": 0.015058904813936414,
+        "folds": [
+          0.8100558659217877,
+          0.8156424581005587,
+          0.807909604519774,
+          0.7808988764044944,
+          0.7808988764044944
+        ],
+        "min": 0.7808988764044944,
+        "max": 0.8156424581005587,
+        "std_sample": 0.016836367415330324
+      },
+      "surname": {
+        "mean": 0.8158048360701992,
+        "std": 0.019173439032097592,
+        "folds": [
+          0.8333333333333334,
+          0.8125,
+          0.8111111111111111,
+          0.8379888268156425,
+          0.7840909090909091
+        ],
+        "min": 0.7840909090909091,
+        "max": 0.8379888268156425,
+        "std_sample": 0.021436556519108994
+      },
+      "famticket": {
+        "mean": 0.8024799509088215,
+        "std": 0.027292699832901696,
+        "folds": [
+          0.8258426966292135,
+          0.8314606741573034,
+          0.8146067415730337,
+          0.7627118644067796,
+          0.7777777777777778
+        ],
+        "min": 0.7627118644067796,
+        "max": 0.8314606741573034,
+        "std_sample": 0.03051416605793267
+      }
+    },
+    "GB": {
+      "ticket": {
+        "mean": 0.8047182287172754,
+        "std": 0.0225420092952231,
+        "folds": [
+          0.8268156424581006,
+          0.8044692737430168,
+          0.8305084745762712,
+          0.7696629213483146,
+          0.7921348314606742
+        ],
+        "min": 0.7696629213483146,
+        "max": 0.8305084745762712,
+        "std_sample": 0.02520273256677549
+      },
+      "surname": {
+        "mean": 0.8047313921336269,
+        "std": 0.030637602583894405,
+        "folds": [
+          0.7722222222222223,
+          0.8295454545454546,
+          0.8,
+          0.8491620111731844,
+          0.7727272727272727
+        ],
+        "min": 0.7722222222222223,
+        "max": 0.8491620111731844,
+        "std_sample": 0.03425388102260554
+      },
+      "famticket": {
+        "mean": 0.786743265832963,
+        "std": 0.021155252013887325,
+        "folds": [
+          0.8202247191011236,
+          0.797752808988764,
+          0.7808988764044944,
+          0.7570621468926554,
+          0.7777777777777778
+        ],
+        "min": 0.7570621468926554,
+        "max": 0.8202247191011236,
+        "std_sample": 0.02365229079209569
+      }
+    },
+    "HGB": {
+      "ticket": {
+        "mean": 0.8058670034296916,
+        "std": 0.025048130335767183,
+        "folds": [
+          0.8212290502793296,
+          0.7932960893854749,
+          0.8361581920903954,
+          0.7640449438202247,
+          0.8146067415730337
+        ],
+        "min": 0.7640449438202247,
+        "max": 0.8361581920903954,
+        "std_sample": 0.028004661070025024
+      },
+      "surname": {
+        "mean": 0.8068526042548388,
+        "std": 0.02675326324393024,
+        "folds": [
+          0.8111111111111111,
+          0.8125,
+          0.7944444444444444,
+          0.8491620111731844,
+          0.7670454545454546
+        ],
+        "min": 0.7670454545454546,
+        "max": 0.8491620111731844,
+        "std_sample": 0.029911057616687275
+      },
+      "famticket": {
+        "mean": 0.8069620601366936,
+        "std": 0.03045262166959065,
+        "folds": [
+          0.8539325842696629,
+          0.8314606741573034,
+          0.7865168539325843,
+          0.7740112994350282,
+          0.7888888888888889
+        ],
+        "min": 0.7740112994350282,
+        "max": 0.8539325842696629,
+        "std_sample": 0.034047066073143915
+      }
+    },
+    "LR": {
+      "ticket": {
+        "mean": 0.8305485130614476,
+        "std": 0.022085319342501512,
+        "folds": [
+          0.8491620111731844,
+          0.8044692737430168,
+          0.8418079096045198,
+          0.8033707865168539,
+          0.8539325842696629
+        ],
+        "min": 0.8033707865168539,
+        "max": 0.8539325842696629,
+        "std_sample": 0.02469213767731217
+      },
+      "surname": {
+        "mean": 0.8271556345578691,
+        "std": 0.012871169538770598,
+        "folds": [
+          0.8277777777777777,
+          0.8181818181818182,
+          0.8111111111111111,
+          0.8491620111731844,
+          0.8295454545454546
+        ],
+        "min": 0.8111111111111111,
+        "max": 0.8491620111731844,
+        "std_sample": 0.014390405019307837
+      },
+      "famticket": {
+        "mean": 0.8259692333735373,
+        "std": 0.043174608666771544,
+        "folds": [
+          0.8932584269662921,
+          0.8314606741573034,
+          0.8258426966292135,
+          0.7570621468926554,
+          0.8222222222222222
+        ],
+        "min": 0.7570621468926554,
+        "max": 0.8932584269662921,
+        "std_sample": 0.04827067994042637
+      }
+    }
+  },
+  "deltas_vs_RF": {
+    "GB": {
+      "ticket": 0.005637092447053571,
+      "surname": -0.01107344393657228,
+      "famticket": -0.01573668507585857
+    },
+    "HGB": {
+      "ticket": 0.006785867159469827,
+      "surname": -0.008952231815360312,
+      "famticket": 0.0044821092278720664
+    },
+    "LR": {
+      "ticket": 0.0314673767912258,
+      "surname": 0.011350798487669955,
+      "famticket": 0.02348928246471582
+    }
+  },
+  "random_deltas_vs_RF": {
+    "GB": -0.0011235955056181357,
+    "HGB": -0.002228359801644708,
+    "LR": -0.015698951729332777
+  },
+  "per_grouping_winners": {
+    "ticket": "LR",
+    "surname": "LR",
+    "famticket": "LR"
+  },
+  "winners_detail": {
+    "ticket": {
+      "RF": 0.7990811362702218,
+      "GB": 0.8047182287172754,
+      "HGB": 0.8058670034296916,
+      "LR": 0.8305485130614476
+    },
+    "surname": {
+      "RF": 0.8158048360701992,
+      "GB": 0.8047313921336269,
+      "HGB": 0.8068526042548388,
+      "LR": 0.8271556345578691
+    },
+    "famticket": {
+      "RF": 0.8024799509088215,
+      "GB": 0.786743265832963,
+      "HGB": 0.8069620601366936,
+      "LR": 0.8259692333735373
+    }
+  },
+  "pooled_paired_t": {
+    "GB": {
+      "mean_diff": -0.007057678855125782,
+      "std_sample": 0.022615158973938242,
+      "se": 0.005839208938526402,
+      "t": -1.2086703746050362,
+      "n": 15,
+      "diffs": [
+        0.016759776536312887,
+        -0.011173184357541888,
+        0.02259887005649719,
+        -0.011235955056179803,
+        0.011235955056179803,
+        -0.061111111111111116,
+        0.017045454545454586,
+        -0.011111111111111072,
+        0.011173184357541888,
+        -0.011363636363636354,
+        -0.005617977528089901,
+        -0.03370786516853941,
+        -0.0337078651685393,
+        -0.005649717514124242,
+        0.0
+      ]
+    },
+    "HGB": {
+      "mean_diff": 0.0007719148573271494,
+      "std_sample": 0.020441083417177017,
+      "se": 0.005277865043544212,
+      "t": 0.14625513364941786,
+      "n": 15,
+      "diffs": [
+        0.011173184357541888,
+        -0.022346368715083775,
+        0.02824858757062143,
+        -0.016853932584269704,
+        0.0337078651685393,
+        -0.022222222222222254,
+        0.0,
+        -0.01666666666666672,
+        0.011173184357541888,
+        -0.017045454545454475,
+        0.028089887640449396,
+        0.0,
+        -0.028089887640449396,
+        0.011299435028248594,
+        0.011111111111111072
+      ]
+    },
+    "LR": {
+      "mean_diff": 0.02210248591453714,
+      "std_sample": 0.02705390788611756,
+      "se": 0.00698528897951752,
+      "t": 3.164147679408358,
+      "n": 15,
+      "diffs": [
+        0.03910614525139666,
+        -0.011173184357541888,
+        0.03389830508474578,
+        0.022471910112359494,
+        0.0730337078651685,
+        -0.005555555555555647,
+        0.005681818181818232,
+        0.0,
+        0.011173184357541888,
+        0.045454545454545525,
+        0.0674157303370786,
+        0.0,
+        0.011235955056179803,
+        -0.005649717514124242,
+        0.0444444444444444
+      ]
+    }
+  },
+  "per_group_paired_t": {
+    "GB": {
+      "ticket": {
+        "mean_diff": 0.005637092447053638,
+        "std_sample": 0.01589062932856222,
+        "se": 0.007106505476783392,
+        "t": 0.7932298744396588,
+        "n": 5,
+        "diffs": [
+          0.016759776536312887,
+          -0.011173184357541888,
+          0.02259887005649719,
+          -0.011235955056179803,
+          0.011235955056179803
+        ]
+      },
+      "surname": {
+        "mean_diff": -0.011073443936572414,
+        "std_sample": 0.030779208441047094,
+        "se": 0.013764880473563326,
+        "t": -0.8044707658624385,
+        "n": 5,
+        "diffs": [
+          -0.061111111111111116,
+          0.017045454545454586,
+          -0.011111111111111072,
+          0.011173184357541888,
+          -0.011363636363636354
+        ]
+      },
+      "famticket": {
+        "mean_diff": -0.01573668507585857,
+        "std_sample": 0.016565816023159204,
+        "se": 0.007408458146107842,
+        "t": -2.1241511749818147,
+        "n": 5,
+        "diffs": [
+          -0.005617977528089901,
+          -0.03370786516853941,
+          -0.0337078651685393,
+          -0.005649717514124242,
+          0.0
+        ]
+      }
+    },
+    "HGB": {
+      "ticket": {
+        "mean_diff": 0.006785867159469827,
+        "std_sample": 0.02555493198689266,
+        "se": 0.01142851301661515,
+        "t": 0.5937664112211545,
+        "n": 5,
+        "diffs": [
+          0.011173184357541888,
+          -0.022346368715083775,
+          0.02824858757062143,
+          -0.016853932584269704,
+          0.0337078651685393
+        ]
+      },
+      "surname": {
+        "mean_diff": -0.008952231815360312,
+        "std_sample": 0.01402034446118064,
+        "se": 0.006270088656632514,
+        "t": -1.4277679799456457,
+        "n": 5,
+        "diffs": [
+          -0.022222222222222254,
+          0.0,
+          -0.01666666666666672,
+          0.011173184357541888,
+          -0.017045454545454475
+        ]
+      },
+      "famticket": {
+        "mean_diff": 0.004482109227871933,
+        "std_sample": 0.020789246509519875,
+        "se": 0.009297233679257333,
+        "t": 0.48209062851370277,
+        "n": 5,
+        "diffs": [
+          0.028089887640449396,
+          0.0,
+          -0.028089887640449396,
+          0.011299435028248594,
+          0.011111111111111072
+        ]
+      }
+    },
+    "LR": {
+      "ticket": {
+        "mean_diff": 0.03146737679122571,
+        "std_sample": 0.030377442086017305,
+        "se": 0.013585205097379541,
+        "t": 2.316297513778093,
+        "n": 5,
+        "diffs": [
+          0.03910614525139666,
+          -0.011173184357541888,
+          0.03389830508474578,
+          0.022471910112359494,
+          0.0730337078651685
+        ]
+      },
+      "surname": {
+        "mean_diff": 0.01135079848767,
+        "std_sample": 0.02006177880330289,
+        "se": 0.008971900230749928,
+        "t": 1.265149878591687,
+        "n": 5,
+        "diffs": [
+          -0.005555555555555647,
+          0.005681818181818232,
+          0.0,
+          0.011173184357541888,
+          0.045454545454545525
+        ]
+      },
+      "famticket": {
+        "mean_diff": 0.02348928246471571,
+        "std_sample": 0.03130344781064417,
+        "se": 0.013999327446943464,
+        "t": 1.677886495171897,
+        "n": 5,
+        "diffs": [
+          0.0674157303370786,
+          0.0,
+          0.011235955056179803,
+          -0.005649717514124242,
+          0.0444444444444444
+        ]
+      }
+    }
+  },
+  "gates": {
+    "GB": {
+      "A_all3_ge_0.010": {
+        "passed": false,
+        "deltas": {
+          "ticket": 0.005637092447053571,
+          "surname": -0.01107344393657228,
+          "famticket": -0.01573668507585857
+        },
+        "threshold": 0.01
+      },
+      "B_pooled_t_ge_2.0": {
+        "passed": false,
+        "t": -1.2086703746050362,
+        "mean_diff": -0.007057678855125782,
+        "n": 15,
+        "threshold": 2.0
+      },
+      "C_random_ge_minus_0.0067": {
+        "passed": true,
+        "random_delta": -0.0011235955056181357,
+        "threshold": -0.0067,
+        "challenger_random": 0.8428535559600778,
+        "rf_random": 0.843977151465696
+      },
+      "D_brier_le_plus_0.002": {
+        "passed": false,
+        "reason": "Brier challenger not measured (random-OOF recompute forbidden; RF 0.12402 reused as tie-break only) -> cannot demonstrate <=+0.002; calibration never promotes alone",
+        "rf_brier": 0.12402,
+        "threshold": 0.002
+      },
+      "overall_switch": false
+    },
+    "HGB": {
+      "A_all3_ge_0.010": {
+        "passed": false,
+        "deltas": {
+          "ticket": 0.006785867159469827,
+          "surname": -0.008952231815360312,
+          "famticket": 0.0044821092278720664
+        },
+        "threshold": 0.01
+      },
+      "B_pooled_t_ge_2.0": {
+        "passed": false,
+        "t": 0.14625513364941786,
+        "mean_diff": 0.0007719148573271494,
+        "n": 15,
+        "threshold": 2.0
+      },
+      "C_random_ge_minus_0.0067": {
+        "passed": true,
+        "random_delta": -0.002228359801644708,
+        "threshold": -0.0067,
+        "challenger_random": 0.8417487916640513,
+        "rf_random": 0.843977151465696
+      },
+      "D_brier_le_plus_0.002": {
+        "passed": false,
+        "reason": "Brier challenger not measured (random-OOF recompute forbidden; RF 0.12402 reused as tie-break only) -> cannot demonstrate <=+0.002; calibration never promotes alone",
+        "rf_brier": 0.12402,
+        "threshold": 0.002
+      },
+      "overall_switch": false
+    },
+    "LR": {
+      "A_all3_ge_0.010": {
+        "passed": true,
+        "deltas": {
+          "ticket": 0.0314673767912258,
+          "surname": 0.011350798487669955,
+          "famticket": 0.02348928246471582
+        },
+        "threshold": 0.01
+      },
+      "B_pooled_t_ge_2.0": {
+        "passed": true,
+        "t": 3.164147679408358,
+        "mean_diff": 0.02210248591453714,
+        "n": 15,
+        "threshold": 2.0
+      },
+      "C_random_ge_minus_0.0067": {
+        "passed": false,
+        "random_delta": -0.015698951729332777,
+        "threshold": -0.0067,
+        "challenger_random": 0.8282781997363632,
+        "rf_random": 0.843977151465696
+      },
+      "D_brier_le_plus_0.002": {
+        "passed": false,
+        "reason": "Brier challenger not measured (random-OOF recompute forbidden; RF 0.12402 reused as tie-break only) -> cannot demonstrate <=+0.002; calibration never promotes alone",
+        "rf_brier": 0.12402,
+        "threshold": 0.002
+      },
+      "overall_switch": false
+    }
+  },
+  "gate_reasoning": {
+    "GB": "A FAIL (ticket +0.00564<0.010 within noise std 0.015/0.023; surname -0.01107 FAIL; famticket -0.01574 FAIL; 1/3 wins). B FAIL (pooled t -1.21<2.0; per-group t +0.79/-0.80/-2.12, famticket significantly worse). C PASS (random -0.00112>=-0.0067). D FAIL (Brier unmeasured). No SWITCH.",
+    "HGB": "A FAIL (ticket +0.00679<0.010 within noise; surname -0.00895 FAIL; famticket +0.00448<0.010; 2/3 wins but no magnitude). B FAIL (pooled t +0.15<2.0; per-group +0.59/-1.43/+0.48 all |t|<2). C PASS (random -0.00223>=-0.0067). D FAIL (Brier unmeasured). No SWITCH.",
+    "LR": "A PASS (ticket +0.03147>=0.010 outside noise; surname +0.01135>=0.010 barely, <RF std 0.019 borderline; famticket +0.02349>=0.010 but <RF std 0.027/LR std 0.043; 3/3 wins \u2014 sweep). B PASS (pooled t +3.16>=2.0; per-group ticket +2.32 PASS, surname +1.27 FAIL, famticket +1.68 FAIL individually). C FAIL (random -0.01570<-0.0067, >2x tolerance; random ranking RF top, group ranking LR top \u2014 flip). D FAIL (Brier unmeasured; calibration never promotes alone). Passes A+B but fails C+D, so NO SWITCH per pre-committed AND rule."
+  },
+  "robustness": "Grouping-dependent. Ticket flip is NOT a ticket-quirk alone: LR sweeps all three groupings (ticket, surname, famticket), while GB (1/3) and HGB (2/3) do not. But all three challengers' non-ticket deltas are < group-std except LR-ticket; LR famticket std is very large (0.043, fold range 0.757-0.893) and surname delta (+0.011) sits inside RF std (0.019). Random-vs-group ranking flips (RF best random, LR best grouped), confirming leakage optimism in random CV rather than a universally superior estimator. Hence RETAIN RF as primary; LR is group-robust but random-deficient.",
+  "verdict": "RETAIN",
+  "verdict_rationale": "SWITCH required ALL of: 3x >=+0.010 AND pooled-t>=2.0 AND random>=-0.0067 AND Brier<=+0.002. GB fails A+B; HGB fails A+B; LR passes A+B but fails C (random -0.0157) and D (Brier unmeasured). Secondary rule also triggers RETAIN: GB/HGB win only 1-2/3 groupings, and 5/9 challenger deltas are < corresponding group-std. Calibration never promotes alone. Therefore RETAIN RF primary; declare robustness grouping-dependent.",
+  "reproduction_checks": {
+    "RF_ticket": "0.79908 reproduces gap_groupcv/gap_robustness/R3A/R3B base_group exactly (same folds)",
+    "RF_surname": "0.81580 reproduces gap_groupcv surname exactly",
+    "GB_ticket": "0.80472 reproduces gap_robustness exactly",
+    "HGB_ticket": "0.80587 reproduces gap_robustness exactly",
+    "LR_ticket_C0.5": "0.83055 reproduces gap2_e1 logreg_C0.5 group exactly (same folds); gap_robustness LR 0.82379 is default-C variant, not comparable",
+    "RF_famticket_diff": "0.80248 here vs 0.81371 in gap_groupcv: expected \u2014 same 739-group partition but '|' vs '__' separator changes unique-label sort order and thus shuffled assignment (verified directly: identical size distribution, disjoint fold indices). Task-compliant '|' used; all estimators share it so paired comparison stays fair."
+  },
+  "files_written": [
+    "reports/gap4_r3d.json",
+    "reports/figures/5x_r3d.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels_or_inference": true,
+    "no_forbidden_paths": true,
+    "no_src_configs_notebook_edits": true,
+    "no_tuning_against_public_scores": true,
+    "no_random_cv_recompute": true,
+    "stacking_excluded": true,
+    "new_files_only": [
+      "reports/gap4_r3d.json",
+      "reports/figures/5x_r3d.png"
+    ]
+  }
+}

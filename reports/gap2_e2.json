@@ -1,0 +1,139 @@
+{
+  "experiments": [
+    {
+      "name": "soft_vote_rf_gb_hgb",
+      "members": [
+        "tuned RF",
+        "tuned GB",
+        "tuned HGB"
+      ],
+      "random": {
+        "mean": 0.8473479379825498,
+        "std": 0.009869150915422351,
+        "folds": [
+          0.8603351955307262,
+          0.848314606741573,
+          0.8426966292134831,
+          0.8314606741573034,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.8047560329911443,
+        "std": 0.025172332565618558,
+        "folds": [
+          0.8212290502793296,
+          0.7877094972067039,
+          0.8418079096045198,
+          0.7696629213483146,
+          0.8033707865168539
+        ]
+      }
+    },
+    {
+      "name": "soft_vote_rf_gb_hgb_lr",
+      "members": [
+        "tuned RF",
+        "tuned GB",
+        "tuned HGB",
+        "LR"
+      ],
+      "random": {
+        "mean": 0.8462243424769318,
+        "std": 0.015464445431802028,
+        "folds": [
+          0.8603351955307262,
+          0.8595505617977528,
+          0.8202247191011236,
+          0.8370786516853933,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.8070221970666578,
+        "std": 0.02863976106142586,
+        "folds": [
+          0.8044692737430168,
+          0.7988826815642458,
+          0.8531073446327684,
+          0.7640449438202247,
+          0.8146067415730337
+        ]
+      }
+    },
+    {
+      "name": "stack_rf_gb_lr",
+      "members": [
+        "tuned RF",
+        "tuned GB",
+        "LR"
+      ],
+      "random": {
+        "mean": 0.8462306195467955,
+        "std": 0.017338280537759255,
+        "folds": [
+          0.8547486033519553,
+          0.8595505617977528,
+          0.8202247191011236,
+          0.8314606741573034,
+          0.8651685393258427
+        ]
+      },
+      "group": {
+        "mean": 0.8092252358068179,
+        "std": 0.020220627090945947,
+        "folds": [
+          0.8212290502793296,
+          0.8044692737430168,
+          0.8361581920903954,
+          0.7752808988764045,
+          0.8089887640449438
+        ]
+      }
+    }
+  ],
+  "reference": {
+    "tuned_rf_random_mean": 0.843977151465696,
+    "tuned_rf_random_std_pop": 0.01412286875015432,
+    "tuned_rf_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_rf_group_mean": 0.7990811362702218,
+    "tuned_rf_group_std_pop": 0.015058904813936414,
+    "tuned_rf_group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "threshold_random_gt": 0.844,
+    "threshold_group_gte": 0.7841,
+    "group_noise_tol": 0.015,
+    "random_splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42) via src.models.make_cv()",
+    "group_splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket (X['Ticket'].astype(str).str.strip(), 681 groups)",
+    "scoring": "accuracy",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived)",
+    "tuned_specs": {
+      "RF": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) scale_numeric=False",
+      "GB": "GradientBoostingClassifier(learning_rate=0.1, max_depth=2, n_estimators=300, subsample=0.8, random_state=42) scale_numeric=False",
+      "HGB": "HistGradientBoostingClassifier(l2_regularization=1.0, learning_rate=0.05, max_depth=5, max_leaf_nodes=15, random_state=42) scale_numeric=False",
+      "LR": "LogisticRegression(max_iter=1000, random_state=42) scale_numeric=True"
+    },
+    "stack_spec": "StackingClassifier(estimators=[rf,gb,lr full pipelines], final_estimator=LogisticRegression(max_iter=1000), stack_method=predict_proba, cv=5, passthrough=False)",
+    "vote_spec": "VotingClassifier(voting=soft)",
+    "std_convention": "population std (ddof=0)",
+    "test_labels": "hidden, never used/inferred",
+    "role": "Enhancer E2 (careful ensembling)",
+    "sklearn_version": "1.9.0"
+  },
+  "recommendation": {
+    "adopt_bool": true,
+    "candidate_or_null": "soft_vote_rf_gb_hgb",
+    "reason": "ADOPT soft_vote_rf_gb_hgb. It passes both pre-committed gates: random-CV 0.84735 > 0.8440 (+0.00337 vs tuned RF 0.84398) and ticket-group-CV 0.80476 vs RF 0.79908 (+0.00568, well above floor 0.7841). It is the best random-CV among qualifiers and the simplest (soft voting, no meta-learner, no extra hyperparams, all members already tuned, preprocessing inside folds). Random-CV std drops 0.0141->0.0099, a stability gain. Complexity cost is real (3 pipelines to train/maintain vs 1, ~3x fit+predict cost) but modest: same production features, same CV protocol, all predict_proba-native, no exotic algorithms. Vote4 (0.84622/0.80702) adds weaker LR for no random gain over vote3, so extra member not justified. Stack (0.84623/0.80923) has highest group-CV (+0.01014) but 25x training cost via inner 5-fold + opaque meta-learner for essentially tied random (+0.00225) and group differences within fold noise (group stds 0.020-0.029, per-fold swings +-0.03), so it does not earn its extra keep over soft voting. Caveat: absolute gains are small (3 extra correct/891 random; group +5/891 equiv) and within 1 std, so this is a narrow adopt on pre-committed rules, not a breakthrough; production change out of scope (no files changed)."
+  }
+}

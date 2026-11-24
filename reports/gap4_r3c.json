@@ -1,0 +1,525 @@
+{
+  "worker": "R3C_targeted_RF_regularization",
+  "reference": {
+    "model": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) via from src.preprocessing import build_full_pipeline (production features)",
+    "random_mean": 0.843977151465696,
+    "random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "random_std_pop": 0.01412286875015432,
+    "group_mean": 0.7990811362702218,
+    "group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "group_std_pop": 0.015058904813936414,
+    "oof_brier_random": 0.12402097661959521,
+    "oof_brier_rounded": 0.124021,
+    "numeric": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "IsAlone",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "reproduced_exactly": true
+  },
+  "evidence_context": {
+    "rf_random_group_drop": 0.0449,
+    "lr_random_group_drop": 0.0045,
+    "fragility_ratio_10x": "memorization of ticket-correlated features",
+    "r_Fare_FarePerPerson": 0.839,
+    "r_FamilySize_SibSp": 0.891,
+    "calibration_0_4_0_5_overconfident_plus0_169_n34": true,
+    "acc_0_5_0_6_bin_0_653_n72": true
+  },
+  "protocol": {
+    "grid": "n_estimators=500 / min_samples_split=5 / random_state=42 / max_features=None fixed; production features; R1 (12/2), R2 (12/4), R3 (8/2), R4 (8/4), R5 (6/4) as (max_depth/min_samples_leaf); R0=(12/1)",
+    "base_builder": "src.preprocessing.build_full_pipeline (TitanicFeatureEngineer + ColumnTransformer median/most-frequent+OneHot(handle_unknown=ignore,sparse_output=False) + RF)",
+    "random_splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.astype(str).str.strip() (n_groups=681)",
+    "signatures_verified_runtime": {
+      "StratifiedKFold": "(n_splits=5, *, shuffle=False, random_state=None)",
+      "StratifiedGroupKFold": "(n_splits=5, shuffle=False, random_state=None)",
+      "sklearn": "1.9.0",
+      "shuffle_random_state_supported": true
+    },
+    "scoring": "accuracy (cross_val_score) + OOF Brier via sklearn.metrics.brier_score_loss on cross_val_predict(method=predict_proba) under random CV",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden \u2014 never used/inferred",
+    "std_convention": "population ddof=0 for CV means; paired-t uses sample std ddof=1: t=mean(diff)/(std(diff,ddof=1)/sqrt(5)) on same 5 ticket folds",
+    "same_partitions": "same rkf/sgkf objects (shuffle,42) for R0 and all variants; R0 recomputed exactly matches reference folds above for paired comparison",
+    "forbidden_respected": "no test labels/inference, no C:/Users/DELL/Downloads, no D:/Downloads, no github raw, no web label search, no Kaggle API, no tuning against 0.75358/0.76315/0.77511",
+    "elapsed_s_main_grid": 246.5
+  },
+  "precommitted_rule": {
+    "ADOPT_iff_ALL": [
+      "(i) group-0.79908>=+0.015 (group>=0.8140811362702218)",
+      "(ii) random-0.84397>=-0.0067 (random>=0.837277151465696)",
+      "(iii) paired-t vs R0 on same 5 ticket folds>=2.0",
+      "(iv) Brier-0.12402<=+0.002 (Brier<=~0.12602)"
+    ],
+    "else": "REJECT all, retain R0",
+    "falsifier": "group<+0.010 with t<2, or +0.010 group only at >-0.0134 random cost, or Brier>+0.003 => fragility is structure, not depth/leaf"
+  },
+  "variants": {
+    "R1": {
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": null,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "random": {
+        "folds": [
+          0.8491620111731844,
+          0.8426966292134831,
+          0.8258426966292135,
+          0.8426966292134831,
+          0.8426966292134831
+        ],
+        "mean": 0.8406189190885694,
+        "std_pop": 0.007800920594700229,
+        "min": 0.8258426966292135,
+        "max": 0.8491620111731844
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.8418079096045198,
+          0.7752808988764045,
+          0.7865168539325843
+        ],
+        "mean": 0.8069781157229251,
+        "std_pop": 0.023870705954035388,
+        "min": 0.7752808988764045,
+        "max": 0.8418079096045198
+      },
+      "oof_brier_random": 0.12391083421340802,
+      "delta_random": -0.0033582323771265132,
+      "delta_group": 0.00789697945270329,
+      "delta_brier": -0.00011014240618718862,
+      "paired_t_vs_R0_group": {
+        "t": 1.08655090812288,
+        "mean_diff": 0.007896979452703335,
+        "sd_diff_ddof1": 0.01625159276123558,
+        "diffs": [
+          0.011173184357541888,
+          -0.005586592178770999,
+          0.03389830508474578,
+          -0.005617977528089901,
+          0.005617977528089901
+        ]
+      },
+      "gates": {
+        "G1_group_ge_plus0_015": {
+          "value": 0.8069781157229251,
+          "threshold": 0.8140811362702218,
+          "delta": 0.00789697945270329,
+          "required": "+0.015",
+          "passed": false
+        },
+        "G2_random_ge_minus0_0067": {
+          "value": 0.8406189190885694,
+          "threshold": 0.8372771514656959,
+          "delta": -0.0033582323771265132,
+          "required": ">=-0.0067",
+          "passed": true
+        },
+        "G3_paired_t_ge_2": {
+          "value": 1.08655090812288,
+          "threshold": 2.0,
+          "passed": false
+        },
+        "G4_brier_le_plus0_002": {
+          "value": 0.12391083421340802,
+          "threshold": 0.12602097661959522,
+          "delta": -0.00011014240618718862,
+          "required": "<=+0.002",
+          "passed": true
+        }
+      },
+      "decision": "REJECT"
+    },
+    "R2": {
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 12,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": null,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "random": {
+        "folds": [
+          0.8491620111731844,
+          0.8426966292134831,
+          0.8202247191011236,
+          0.8426966292134831,
+          0.848314606741573
+        ],
+        "mean": 0.8406189190885694,
+        "std_pop": 0.010552394824617534,
+        "min": 0.8202247191011236,
+        "max": 0.8491620111731844
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.847457627118644,
+          0.7865168539325843,
+          0.8146067415730337
+        ],
+        "mean": 0.815973227765076,
+        "std_pop": 0.019613523334746554,
+        "min": 0.7865168539325843,
+        "max": 0.847457627118644
+      },
+      "oof_brier_random": 0.12219932843899803,
+      "delta_random": -0.0033582323771265132,
+      "delta_group": 0.016892091494854156,
+      "delta_brier": -0.0018216481805971851,
+      "paired_t_vs_R0_group": {
+        "t": 1.9762819678322103,
+        "mean_diff": 0.016892091494854024,
+        "sd_diff_ddof1": 0.019112588931867708,
+        "diffs": [
+          0.011173184357541888,
+          -0.005586592178770999,
+          0.039548022598870025,
+          0.005617977528089901,
+          0.0337078651685393
+        ]
+      },
+      "gates": {
+        "G1_group_ge_plus0_015": {
+          "value": 0.815973227765076,
+          "threshold": 0.8140811362702218,
+          "delta": 0.016892091494854156,
+          "required": "+0.015",
+          "passed": true
+        },
+        "G2_random_ge_minus0_0067": {
+          "value": 0.8406189190885694,
+          "threshold": 0.8372771514656959,
+          "delta": -0.0033582323771265132,
+          "required": ">=-0.0067",
+          "passed": true
+        },
+        "G3_paired_t_ge_2": {
+          "value": 1.9762819678322103,
+          "threshold": 2.0,
+          "passed": false
+        },
+        "G4_brier_le_plus0_002": {
+          "value": 0.12219932843899803,
+          "threshold": 0.12602097661959522,
+          "delta": -0.0018216481805971851,
+          "required": "<=+0.002",
+          "passed": true
+        }
+      },
+      "decision": "REJECT"
+    },
+    "R3": {
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "min_samples_leaf": 2,
+        "max_features": null,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "random": {
+        "folds": [
+          0.8491620111731844,
+          0.8426966292134831,
+          0.8033707865168539,
+          0.8426966292134831,
+          0.8314606741573034
+        ],
+        "mean": 0.8338773460548616,
+        "std_pop": 0.016282941850597008,
+        "min": 0.8033707865168539,
+        "max": 0.8491620111731844
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.847457627118644,
+          0.7808988764044944,
+          0.8033707865168539
+        ],
+        "mean": 0.8126024412482218,
+        "std_pop": 0.02184548870687076,
+        "min": 0.7808988764044944,
+        "max": 0.847457627118644
+      },
+      "oof_brier_random": 0.12122790642227196,
+      "delta_random": -0.010099805410834328,
+      "delta_group": 0.01352130497799997,
+      "delta_brier": -0.0027930701973232497,
+      "paired_t_vs_R0_group": {
+        "t": 1.6700897267232895,
+        "mean_diff": 0.013521304978000082,
+        "sd_diff_ddof1": 0.018103552516686983,
+        "diffs": [
+          0.011173184357541888,
+          -0.005586592178770999,
+          0.039548022598870025,
+          0.0,
+          0.022471910112359494
+        ]
+      },
+      "gates": {
+        "G1_group_ge_plus0_015": {
+          "value": 0.8126024412482218,
+          "threshold": 0.8140811362702218,
+          "delta": 0.01352130497799997,
+          "required": "+0.015",
+          "passed": false
+        },
+        "G2_random_ge_minus0_0067": {
+          "value": 0.8338773460548616,
+          "threshold": 0.8372771514656959,
+          "delta": -0.010099805410834328,
+          "required": ">=-0.0067",
+          "passed": false
+        },
+        "G3_paired_t_ge_2": {
+          "value": 1.6700897267232895,
+          "threshold": 2.0,
+          "passed": false
+        },
+        "G4_brier_le_plus0_002": {
+          "value": 0.12122790642227196,
+          "threshold": 0.12602097661959522,
+          "delta": -0.0027930701973232497,
+          "required": "<=+0.002",
+          "passed": true
+        }
+      },
+      "decision": "REJECT"
+    },
+    "R4": {
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 8,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": null,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "random": {
+        "folds": [
+          0.8435754189944135,
+          0.8426966292134831,
+          0.8202247191011236,
+          0.8426966292134831,
+          0.848314606741573
+        ],
+        "mean": 0.8395016006528152,
+        "std_pop": 0.009861842115606388,
+        "min": 0.8202247191011236,
+        "max": 0.848314606741573
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.847457627118644,
+          0.7865168539325843,
+          0.8146067415730337
+        ],
+        "mean": 0.815973227765076,
+        "std_pop": 0.019613523334746554,
+        "min": 0.7865168539325843,
+        "max": 0.847457627118644
+      },
+      "oof_brier_random": 0.12108221578572402,
+      "delta_random": -0.0044755508128807575,
+      "delta_group": 0.016892091494854156,
+      "delta_brier": -0.002938760833871193,
+      "paired_t_vs_R0_group": {
+        "t": 1.9762819678322103,
+        "mean_diff": 0.016892091494854024,
+        "sd_diff_ddof1": 0.019112588931867708,
+        "diffs": [
+          0.011173184357541888,
+          -0.005586592178770999,
+          0.039548022598870025,
+          0.005617977528089901,
+          0.0337078651685393
+        ]
+      },
+      "gates": {
+        "G1_group_ge_plus0_015": {
+          "value": 0.815973227765076,
+          "threshold": 0.8140811362702218,
+          "delta": 0.016892091494854156,
+          "required": "+0.015",
+          "passed": true
+        },
+        "G2_random_ge_minus0_0067": {
+          "value": 0.8395016006528152,
+          "threshold": 0.8372771514656959,
+          "delta": -0.0044755508128807575,
+          "required": ">=-0.0067",
+          "passed": true
+        },
+        "G3_paired_t_ge_2": {
+          "value": 1.9762819678322103,
+          "threshold": 2.0,
+          "passed": false
+        },
+        "G4_brier_le_plus0_002": {
+          "value": 0.12108221578572402,
+          "threshold": 0.12602097661959522,
+          "delta": -0.002938760833871193,
+          "required": "<=+0.002",
+          "passed": true
+        }
+      },
+      "decision": "REJECT"
+    },
+    "R5": {
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 6,
+        "min_samples_split": 5,
+        "min_samples_leaf": 4,
+        "max_features": null,
+        "random_state": 42,
+        "n_jobs": -1
+      },
+      "random": {
+        "folds": [
+          0.8491620111731844,
+          0.8595505617977528,
+          0.8089887640449438,
+          0.8426966292134831,
+          0.8426966292134831
+        ],
+        "mean": 0.8406189190885694,
+        "std_pop": 0.01697346154939834,
+        "min": 0.8089887640449438,
+        "max": 0.8595505617977528
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.8418079096045198,
+          0.7808988764044944,
+          0.8089887640449438
+        ],
+        "mean": 0.812596093251015,
+        "std_pop": 0.019758731216472848,
+        "min": 0.7808988764044944,
+        "max": 0.8418079096045198
+      },
+      "oof_brier_random": 0.1205586111987768,
+      "delta_random": -0.0033582323771265132,
+      "delta_group": 0.013514956980793191,
+      "delta_brier": -0.003462365420818417,
+      "paired_t_vs_R0_group": {
+        "t": 1.7588145394562638,
+        "mean_diff": 0.013514956980793214,
+        "sd_diff_ddof1": 0.017182233739881154,
+        "diffs": [
+          0.011173184357541888,
+          -0.005586592178770999,
+          0.03389830508474578,
+          0.0,
+          0.028089887640449396
+        ]
+      },
+      "gates": {
+        "G1_group_ge_plus0_015": {
+          "value": 0.812596093251015,
+          "threshold": 0.8140811362702218,
+          "delta": 0.013514956980793191,
+          "required": "+0.015",
+          "passed": false
+        },
+        "G2_random_ge_minus0_0067": {
+          "value": 0.8406189190885694,
+          "threshold": 0.8372771514656959,
+          "delta": -0.0033582323771265132,
+          "required": ">=-0.0067",
+          "passed": true
+        },
+        "G3_paired_t_ge_2": {
+          "value": 1.7588145394562638,
+          "threshold": 2.0,
+          "passed": false
+        },
+        "G4_brier_le_plus0_002": {
+          "value": 0.1205586111987768,
+          "threshold": 0.12602097661959522,
+          "delta": -0.003462365420818417,
+          "required": "<=+0.002",
+          "passed": true
+        }
+      },
+      "decision": "REJECT"
+    }
+  },
+  "gate_summary": {
+    "R1": "G1 FAIL (+0.00790<0.015) | G2 PASS (-0.00336>=-0.0067) | G3 FAIL (1.0866<2.0) | G4 PASS (-0.00011<=+0.002) => REJECT",
+    "R2": "G1 PASS (+0.01689>=0.015) | G2 PASS (-0.00336>=-0.0067) | G3 FAIL (1.9763<2.0) | G4 PASS (-0.00182<=+0.002) => REJECT (fails t by 0.0237)",
+    "R3": "G1 FAIL (+0.01352<0.015) | G2 FAIL (-0.01010<-0.0067) | G3 FAIL (1.6701<2.0) | G4 PASS (-0.00279<=+0.002) => REJECT",
+    "R4": "G1 PASS (+0.01689>=0.015) | G2 PASS (-0.00448>=-0.0067) | G3 FAIL (1.9763<2.0) | G4 PASS (-0.00294<=+0.002) => REJECT (fails t by 0.0237)",
+    "R5": "G1 FAIL (+0.01351<0.015) | G2 PASS (-0.00336>=-0.0067) | G3 FAIL (1.7588<2.0) | G4 PASS (-0.00346<=+0.002) => REJECT"
+  },
+  "verdict": "REJECT all, retain R0",
+  "rationale": "No variant satisfies ALL four pre-committed gates. Closest R2/R4 (leaf 4) clear group (+0.01689) and random-cost and Brier gates but paired-t 1.9763<2.0 (needs >=2.0). R1/R5/R3 fail group-magnitude gate; R3 additionally fails random-cost gate (-0.01010). Brier improves monotonically with regularization (0.12391/0.12220/0.12123/0.12108/0.12056 vs 0.12402) so G4 passes everywhere, but group gains are fold-concentrated (fold2 +0.034/+0.040) with higher group-std (0.0196-0.0239 vs R0 0.01506) and t<2 => not robust. Per protocol, REJECT all.",
+  "falsifier_check": "FIRES toward structure-not-depth: R1 group +0.00790<+0.010 with t=1.0866<2 (exact falsifier clause 1). All five t<2 (1.09/1.98/1.67/1.98/1.76) despite +0.0079 to +0.0169 group lifts. No variant pays >-0.0134 random cost (worst R3 -0.01010) and no Brier>+0.003 (all Brier deltas negative), so clauses 2-3 do not fire \u2014 but clause 1 plus universal t<2 confirms ticket fragility is structural (ticket-correlated Fare/FarePerPerson r=0.839 memorization), not fixable by depth/leaf alone. R2/R4 near-miss (t=1.976) is still a miss under pre-commitment.",
+  "notes": {
+    "R2_R4_group_identical": "R2 (12/4) and R4 (8/4) group folds identical [0.82123,0.81006,0.84746,0.78652,0.81461] mean 0.815973 \u2014 leaf=4 dominates depth cap once depth>=8 on this data; random folds differ slightly (R2 mean 0.840619 vs R4 0.839502).",
+    "R1_R2_R5_random_mean_tie": "means tie at 0.8406189190885694 with compensating fold swaps (e.g. R1 fold2 0.82584 vs R2 fold2 0.82022 offset by fold4 0.84270 vs 0.84831; step ~0.0056 = 1/178) \u2014 discrete-accuracy coincidence, folds reported exactly.",
+    "group_std_inflation": "all variants inflate group std vs R0 (0.02387/0.01961/0.02185/0.01961/0.01976 vs 0.01506) \u2014 gains not variance-reducing."
+  },
+  "files_written": [
+    "reports/gap4_r3c.json",
+    "reports/figures/5x_r3c.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_configs_edits": true,
+    "no_experiment_results_touch": true,
+    "no_tuning_against_public_scores": true,
+    "new_files_only": "reports/gap4_* and reports/figures/5x_*"
+  }
+}

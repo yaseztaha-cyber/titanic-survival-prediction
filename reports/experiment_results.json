@@ -1,0 +1,298 @@
+{
+  "best_name": "Random Forest (tuned)",
+  "best_cv": 0.843977151465696,
+  "best_params": {
+    "model__max_depth": 12,
+    "model__max_features": null,
+    "model__min_samples_leaf": 1,
+    "model__min_samples_split": 5,
+    "model__n_estimators": 500
+  },
+  "oof_metrics": {
+    "accuracy": 0.8439955106621774,
+    "precision": 0.8201892744479495,
+    "recall": 0.7602339181286549,
+    "f1": 0.7890743550834598
+  },
+  "confusion_matrix": {
+    "Predicted: Died (0)": {
+      "Actual: Died (0)": 492,
+      "Actual: Survived (1)": 82
+    },
+    "Predicted: Survived (1)": {
+      "Actual: Died (0)": 57,
+      "Actual: Survived (1)": 260
+    }
+  },
+  "permutation_top10": [
+    {
+      "feature": "Name",
+      "importance_mean": 0.2063973063973064,
+      "importance_std": 0.012380829462149707
+    },
+    {
+      "feature": "Fare",
+      "importance_mean": 0.14826038159371496,
+      "importance_std": 0.008450366098352905
+    },
+    {
+      "feature": "Pclass",
+      "importance_mean": 0.0762065095398429,
+      "importance_std": 0.00799067452809319
+    },
+    {
+      "feature": "Age",
+      "importance_mean": 0.06475869809203146,
+      "importance_std": 0.005590307252710331
+    },
+    {
+      "feature": "Ticket",
+      "importance_mean": 0.05443322109988778,
+      "importance_std": 0.00452427483069506
+    },
+    {
+      "feature": "Cabin",
+      "importance_mean": 0.03265993265993271,
+      "importance_std": 0.0037711105760744215
+    },
+    {
+      "feature": "Embarked",
+      "importance_mean": 0.017845117845117876,
+      "importance_std": 0.0033085079625103497
+    },
+    {
+      "feature": "SibSp",
+      "importance_mean": 0.016386083052749755,
+      "importance_std": 0.002469135802469125
+    },
+    {
+      "feature": "Parch",
+      "importance_mean": 0.009315375982042717,
+      "importance_std": 0.0020725236041099107
+    },
+    {
+      "feature": "Sex",
+      "importance_mean": 0.007744107744107787,
+      "importance_std": 0.0036350470798432667
+    }
+  ],
+  "impurity_top10": [
+    {
+      "feature": "cat__Title_Mr",
+      "importance": 0.23149048500772498
+    },
+    {
+      "feature": "num__Age",
+      "importance": 0.14006611256602575
+    },
+    {
+      "feature": "num__FarePerPerson",
+      "importance": 0.10917337124861778
+    },
+    {
+      "feature": "num__Fare",
+      "importance": 0.1076806111456948
+    },
+    {
+      "feature": "cat__Sex_male",
+      "importance": 0.07755516189027273
+    },
+    {
+      "feature": "cat__Pclass_3",
+      "importance": 0.06225832368839708
+    },
+    {
+      "feature": "cat__Sex_female",
+      "importance": 0.05875721133241334
+    },
+    {
+      "feature": "num__TicketGroupSize",
+      "importance": 0.039454059803990506
+    },
+    {
+      "feature": "num__FamilySize",
+      "importance": 0.025290114826455757
+    },
+    {
+      "feature": "cat__Title_Rare",
+      "importance": 0.020758122234917464
+    }
+  ],
+  "ablation_baseline": {
+    "mean": 0.8147824995292199,
+    "std": 0.024304986353250152
+  },
+  "ablation_full_rf300": {
+    "mean": 0.8091707990709937,
+    "std": 0.022977611855020653
+  },
+  "ablation_full_tuned": {
+    "mean": 0.843977151465696,
+    "std": 0.01412286875015432
+  },
+  "error_by": {
+    "Sex": {
+      "mean": {
+        "female": 0.18152866242038215,
+        "male": 0.14211438474870017
+      },
+      "count": {
+        "female": 314,
+        "male": 577
+      }
+    },
+    "Pclass": {
+      "mean": {
+        "3": 0.17515274949083504,
+        "1": 0.1712962962962963,
+        "2": 0.08695652173913043
+      },
+      "count": {
+        "3": 491,
+        "1": 216,
+        "2": 184
+      }
+    },
+    "Embarked": {
+      "mean": {
+        "Q": 0.16883116883116883,
+        "S": 0.15527950310559005,
+        "C": 0.15476190476190477
+      },
+      "count": {
+        "Q": 77,
+        "S": 644,
+        "C": 168
+      }
+    },
+    "Title": {
+      "mean": {
+        "Rare": 0.2608695652173913,
+        "Miss": 0.1837837837837838,
+        "Mrs": 0.1746031746031746,
+        "Mr": 0.1450676982591876,
+        "Master": 0.05
+      },
+      "count": {
+        "Rare": 23,
+        "Miss": 185,
+        "Mrs": 126,
+        "Mr": 517,
+        "Master": 40
+      }
+    },
+    "CabinDeck": {
+      "mean": {
+        "D": 0.2727272727272727,
+        "A": 0.26666666666666666,
+        "G": 0.25,
+        "C": 0.22033898305084745,
+        "E": 0.15625,
+        "Missing": 0.1470160116448326,
+        "B": 0.1276595744680851,
+        "F": 0.0,
+        "T": 0.0
+      },
+      "count": {
+        "D": 33,
+        "A": 15,
+        "G": 4,
+        "C": 59,
+        "E": 32,
+        "Missing": 687,
+        "B": 47,
+        "F": 13,
+        "T": 1
+      }
+    },
+    "FamilySizeCategory": {
+      "mean": {
+        "Small": 0.17465753424657535,
+        "Alone": 0.15456238361266295,
+        "Large": 0.08064516129032258
+      },
+      "count": {
+        "Small": 292,
+        "Alone": 537,
+        "Large": 62
+      }
+    },
+    "CabinKnown": {
+      "mean": {
+        "1": 0.18627450980392157,
+        "0": 0.1470160116448326
+      },
+      "count": {
+        "1": 204,
+        "0": 687
+      }
+    },
+    "IsAlone": {
+      "mean": {
+        "0": 0.15819209039548024,
+        "1": 0.15456238361266295
+      },
+      "count": {
+        "0": 354,
+        "1": 537
+      }
+    },
+    "Mother": {
+      "mean": {
+        "0": 0.15719467956469166,
+        "1": 0.140625
+      },
+      "count": {
+        "0": 827,
+        "1": 64
+      }
+    }
+  },
+  "submission": {
+    "path": "D:\\YASEZ_HOME\\projects\\titanic sceniro project\\submissions\\submission.csv",
+    "n": 418,
+    "survival_rate": 0.3708133971291866,
+    "counts": {
+      "0": 263,
+      "1": 155
+    }
+  },
+  "comparison": [
+    {
+      "Model": "Gradient Boosting",
+      "CV Accuracy": 0.8406000878789781,
+      "CV Std": 0.0138513101215318,
+      "Fit Time (s)": 0.8
+    },
+    {
+      "Model": "Logistic Regression",
+      "CV Accuracy": 0.8282781997363632,
+      "CV Std": 0.0157751345521236,
+      "Fit Time (s)": 6.79
+    },
+    {
+      "Model": "Hist Gradient Boosting",
+      "CV Accuracy": 0.8260121775155357,
+      "CV Std": 0.0245171661878941,
+      "Fit Time (s)": 1.04
+    },
+    {
+      "Model": "Random Forest",
+      "CV Accuracy": 0.8091707990709937,
+      "CV Std": 0.0229776118550206,
+      "Fit Time (s)": 2.75
+    },
+    {
+      "Model": "Decision Tree",
+      "CV Accuracy": 0.7901136149645345,
+      "CV Std": 0.0305439768589455,
+      "Fit Time (s)": 0.49
+    },
+    {
+      "Model": "Majority Baseline",
+      "CV Accuracy": 0.6161634548992531,
+      "CV Std": 0.0023249236391277,
+      "Fit Time (s)": 13.93
+    }
+  ]
+}

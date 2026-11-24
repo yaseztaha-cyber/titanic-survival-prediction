@@ -1,0 +1,768 @@
+{
+  "worker": "R4B",
+  "question": "Which of ticket/fare/cabin groups survive removal? (leave-one-group-out)",
+  "reference": {
+    "tuned_RF": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1)",
+    "tuned_RF_random_mean": 0.843977151465696,
+    "tuned_RF_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_RF_group_mean": 0.7990811362702218,
+    "tuned_RF_group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "numeric_base": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "IsAlone",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical_base": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "note": "Reference values reused for gate context; base recomputed fresh below for deltas (must reproduce)."
+  },
+  "protocol": {
+    "base": "full production set (10 numeric + 6 categorical, config order via build_pipeline_with_features)",
+    "variants": {
+      "A_minus_TicketGroupSize": {
+        "drop": [
+          "TicketGroupSize"
+        ],
+        "numeric": [
+          "Age",
+          "Fare",
+          "SibSp",
+          "Parch",
+          "FamilySize",
+          "IsAlone",
+          "FarePerPerson",
+          "CabinKnown",
+          "Mother"
+        ],
+        "categorical": [
+          "Pclass",
+          "Sex",
+          "Embarked",
+          "Title",
+          "CabinDeck",
+          "FamilySizeCategory"
+        ]
+      },
+      "B_minus_FarePerPerson": {
+        "drop": [
+          "FarePerPerson"
+        ],
+        "numeric": [
+          "Age",
+          "Fare",
+          "SibSp",
+          "Parch",
+          "FamilySize",
+          "IsAlone",
+          "TicketGroupSize",
+          "CabinKnown",
+          "Mother"
+        ],
+        "categorical": [
+          "Pclass",
+          "Sex",
+          "Embarked",
+          "Title",
+          "CabinDeck",
+          "FamilySizeCategory"
+        ]
+      },
+      "C_minus_Cabin": {
+        "drop": [
+          "CabinDeck",
+          "CabinKnown"
+        ],
+        "numeric": [
+          "Age",
+          "Fare",
+          "SibSp",
+          "Parch",
+          "FamilySize",
+          "IsAlone",
+          "TicketGroupSize",
+          "FarePerPerson",
+          "Mother"
+        ],
+        "categorical": [
+          "Pclass",
+          "Sex",
+          "Embarked",
+          "Title",
+          "FamilySizeCategory"
+        ]
+      }
+    },
+    "estimator": "tuned RF (500, max_depth 12, min_split 5, min_leaf 1, max_features None, rs 42, n_jobs -1)",
+    "builder": "from src.analysis import build_pipeline_with_features (config column order preserved)",
+    "random_splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.astype(str).str.strip()",
+    "splitter_signatures_verified": {
+      "StratifiedKFold": "(n_splits=5, *, shuffle=False, random_state=None)",
+      "StratifiedGroupKFold": "(n_splits=5, shuffle=False, random_state=None)",
+      "sklearn": "1.9.0",
+      "shuffle_supported": true
+    },
+    "groups": "Ticket.astype(str).str.strip() (n_groups=681)",
+    "scoring": "accuracy",
+    "std_convention": "population ddof=0 (std_sample ddof=1 also recorded)",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden - never used/inferred",
+    "oof_slices": "cross_val_predict labels with random CV on base + 3 variants; slices: Fare quartiles Q1-Q4 via full-train Fare quantile edges + CabinKnown 0/1 via Cabin.notna()",
+    "fare_quantile_edges": [
+      0.0,
+      7.9104,
+      14.4542,
+      31.0,
+      512.3292
+    ],
+    "fits": "3 variants x 10 fits (5 random + 5 group) + base 10 fits + 4x5 OOF fits",
+    "elapsed_s": 212.3
+  },
+  "base_recomputed": {
+    "random": {
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "std_sample": 0.015789847281326277,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262,
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ]
+    },
+    "group": {
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "std_sample": 0.016836367415330324,
+      "min": 0.7808988764044944,
+      "max": 0.8156424581005587,
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ]
+    }
+  },
+  "variants": {
+    "A_minus_TicketGroupSize": {
+      "drop": [
+        "TicketGroupSize"
+      ],
+      "desc": "minus {TicketGroupSize}",
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "FarePerPerson",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ],
+      "random": {
+        "mean": 0.8462243424769318,
+        "std": 0.013267468843036211,
+        "std_sample": 0.014833481111194728,
+        "min": 0.8258426966292135,
+        "max": 0.8603351955307262,
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8258426966292135,
+          0.848314606741573,
+          0.8595505617977528
+        ]
+      },
+      "group": {
+        "mean": 0.808063836027331,
+        "std": 0.021261781142216496,
+        "std_sample": 0.023771393978359603,
+        "min": 0.7752808988764045,
+        "max": 0.8324022346368715,
+        "folds": [
+          0.8324022346368715,
+          0.8156424581005587,
+          0.8248587570621468,
+          0.7752808988764045,
+          0.7921348314606742
+        ]
+      },
+      "delta_random": 0.0022471910112358273,
+      "delta_group": 0.008982699757109192,
+      "gate_random_ge_minus0_001": true,
+      "gate_group_ge_plus0_002": true,
+      "gate_both": true,
+      "decision": "SIMPLIFY",
+      "fold_wins_random": {
+        "wins": 2,
+        "ties": 3,
+        "losses": 0,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8603351955307262,
+            "variant": 0.8603351955307262,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 1,
+            "base": 0.8370786516853933,
+            "variant": 0.8370786516853933,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 2,
+            "base": 0.8202247191011236,
+            "variant": 0.8258426966292135,
+            "delta": 0.005617977528089901,
+            "result": "win"
+          },
+          {
+            "fold": 3,
+            "base": 0.848314606741573,
+            "variant": 0.848314606741573,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 4,
+            "base": 0.8539325842696629,
+            "variant": 0.8595505617977528,
+            "delta": 0.005617977528089901,
+            "result": "win"
+          }
+        ]
+      },
+      "fold_wins_group": {
+        "wins": 3,
+        "ties": 1,
+        "losses": 1,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8100558659217877,
+            "variant": 0.8324022346368715,
+            "delta": 0.022346368715083775,
+            "result": "win"
+          },
+          {
+            "fold": 1,
+            "base": 0.8156424581005587,
+            "variant": 0.8156424581005587,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 2,
+            "base": 0.807909604519774,
+            "variant": 0.8248587570621468,
+            "delta": 0.016949152542372836,
+            "result": "win"
+          },
+          {
+            "fold": 3,
+            "base": 0.7808988764044944,
+            "variant": 0.7752808988764045,
+            "delta": -0.005617977528089901,
+            "result": "loss"
+          },
+          {
+            "fold": 4,
+            "base": 0.7808988764044944,
+            "variant": 0.7921348314606742,
+            "delta": 0.011235955056179803,
+            "result": "win"
+          }
+        ]
+      }
+    },
+    "B_minus_FarePerPerson": {
+      "drop": [
+        "FarePerPerson"
+      ],
+      "desc": "minus {FarePerPerson}",
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ],
+      "random": {
+        "mean": 0.8406000878789781,
+        "std": 0.01818598764735619,
+        "std_sample": 0.02033255230872996,
+        "min": 0.8146067415730337,
+        "max": 0.8659217877094972,
+        "folds": [
+          0.8659217877094972,
+          0.848314606741573,
+          0.8146067415730337,
+          0.848314606741573,
+          0.8258426966292135
+        ]
+      },
+      "group": {
+        "mean": 0.8192999329381971,
+        "std": 0.01793941702125031,
+        "std_sample": 0.02005687796811624,
+        "min": 0.7865168539325843,
+        "max": 0.8361581920903954,
+        "folds": [
+          0.8324022346368715,
+          0.8268156424581006,
+          0.8361581920903954,
+          0.7865168539325843,
+          0.8146067415730337
+        ]
+      },
+      "delta_random": -0.0033770635867178544,
+      "delta_group": 0.020218796667975325,
+      "gate_random_ge_minus0_001": false,
+      "gate_group_ge_plus0_002": true,
+      "gate_both": false,
+      "decision": "KEEP",
+      "fold_wins_random": {
+        "wins": 2,
+        "ties": 1,
+        "losses": 2,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8603351955307262,
+            "variant": 0.8659217877094972,
+            "delta": 0.005586592178770999,
+            "result": "win"
+          },
+          {
+            "fold": 1,
+            "base": 0.8370786516853933,
+            "variant": 0.848314606741573,
+            "delta": 0.011235955056179692,
+            "result": "win"
+          },
+          {
+            "fold": 2,
+            "base": 0.8202247191011236,
+            "variant": 0.8146067415730337,
+            "delta": -0.005617977528089901,
+            "result": "loss"
+          },
+          {
+            "fold": 3,
+            "base": 0.848314606741573,
+            "variant": 0.848314606741573,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 4,
+            "base": 0.8539325842696629,
+            "variant": 0.8258426966292135,
+            "delta": -0.028089887640449396,
+            "result": "loss"
+          }
+        ]
+      },
+      "fold_wins_group": {
+        "wins": 5,
+        "ties": 0,
+        "losses": 0,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8100558659217877,
+            "variant": 0.8324022346368715,
+            "delta": 0.022346368715083775,
+            "result": "win"
+          },
+          {
+            "fold": 1,
+            "base": 0.8156424581005587,
+            "variant": 0.8268156424581006,
+            "delta": 0.011173184357541888,
+            "result": "win"
+          },
+          {
+            "fold": 2,
+            "base": 0.807909604519774,
+            "variant": 0.8361581920903954,
+            "delta": 0.02824858757062143,
+            "result": "win"
+          },
+          {
+            "fold": 3,
+            "base": 0.7808988764044944,
+            "variant": 0.7865168539325843,
+            "delta": 0.005617977528089901,
+            "result": "win"
+          },
+          {
+            "fold": 4,
+            "base": 0.7808988764044944,
+            "variant": 0.8146067415730337,
+            "delta": 0.0337078651685393,
+            "result": "win"
+          }
+        ]
+      }
+    },
+    "C_minus_Cabin": {
+      "drop": [
+        "CabinDeck",
+        "CabinKnown"
+      ],
+      "desc": "minus {CabinDeck,CabinKnown} (both together)",
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "FamilySizeCategory"
+      ],
+      "random": {
+        "mean": 0.8350134957002073,
+        "std": 0.01835120886417358,
+        "std_sample": 0.020517275244794415,
+        "min": 0.8033707865168539,
+        "max": 0.8595505617977528,
+        "folds": [
+          0.8379888268156425,
+          0.8314606741573034,
+          0.8033707865168539,
+          0.8426966292134831,
+          0.8595505617977528
+        ]
+      },
+      "group": {
+        "mean": 0.8002300528373242,
+        "std": 0.020854548669543397,
+        "std_sample": 0.023316094232588416,
+        "min": 0.7640449438202247,
+        "max": 0.8248587570621468,
+        "folds": [
+          0.8100558659217877,
+          0.8100558659217877,
+          0.8248587570621468,
+          0.7640449438202247,
+          0.7921348314606742
+        ]
+      },
+      "delta_random": -0.008963655765488632,
+      "delta_group": 0.001148916567102365,
+      "gate_random_ge_minus0_001": false,
+      "gate_group_ge_plus0_002": false,
+      "gate_both": false,
+      "decision": "KEEP",
+      "fold_wins_random": {
+        "wins": 1,
+        "ties": 0,
+        "losses": 4,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8603351955307262,
+            "variant": 0.8379888268156425,
+            "delta": -0.022346368715083775,
+            "result": "loss"
+          },
+          {
+            "fold": 1,
+            "base": 0.8370786516853933,
+            "variant": 0.8314606741573034,
+            "delta": -0.005617977528089901,
+            "result": "loss"
+          },
+          {
+            "fold": 2,
+            "base": 0.8202247191011236,
+            "variant": 0.8033707865168539,
+            "delta": -0.016853932584269704,
+            "result": "loss"
+          },
+          {
+            "fold": 3,
+            "base": 0.848314606741573,
+            "variant": 0.8426966292134831,
+            "delta": -0.005617977528089901,
+            "result": "loss"
+          },
+          {
+            "fold": 4,
+            "base": 0.8539325842696629,
+            "variant": 0.8595505617977528,
+            "delta": 0.005617977528089901,
+            "result": "win"
+          }
+        ]
+      },
+      "fold_wins_group": {
+        "wins": 2,
+        "ties": 1,
+        "losses": 2,
+        "detail": [
+          {
+            "fold": 0,
+            "base": 0.8100558659217877,
+            "variant": 0.8100558659217877,
+            "delta": 0.0,
+            "result": "tie"
+          },
+          {
+            "fold": 1,
+            "base": 0.8156424581005587,
+            "variant": 0.8100558659217877,
+            "delta": -0.005586592178770999,
+            "result": "loss"
+          },
+          {
+            "fold": 2,
+            "base": 0.807909604519774,
+            "variant": 0.8248587570621468,
+            "delta": 0.016949152542372836,
+            "result": "win"
+          },
+          {
+            "fold": 3,
+            "base": 0.7808988764044944,
+            "variant": 0.7640449438202247,
+            "delta": -0.016853932584269704,
+            "result": "loss"
+          },
+          {
+            "fold": 4,
+            "base": 0.7808988764044944,
+            "variant": 0.7921348314606742,
+            "delta": 0.011235955056179803,
+            "result": "win"
+          }
+        ]
+      }
+    }
+  },
+  "slices_oof_random": {
+    "Q1": {
+      "BASE_full": {
+        "n": 223,
+        "acc": 0.8699551569506726
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 223,
+        "acc": 0.874439461883408,
+        "delta_vs_base": 0.004484304932735439
+      },
+      "B_minus_FarePerPerson": {
+        "n": 223,
+        "acc": 0.8834080717488789,
+        "delta_vs_base": 0.013452914798206317
+      },
+      "C_minus_Cabin": {
+        "n": 223,
+        "acc": 0.874439461883408,
+        "delta_vs_base": 0.004484304932735439
+      }
+    },
+    "Q2": {
+      "BASE_full": {
+        "n": 224,
+        "acc": 0.8125
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 224,
+        "acc": 0.8125,
+        "delta_vs_base": 0.0
+      },
+      "B_minus_FarePerPerson": {
+        "n": 224,
+        "acc": 0.8169642857142857,
+        "delta_vs_base": 0.004464285714285698
+      },
+      "C_minus_Cabin": {
+        "n": 224,
+        "acc": 0.7991071428571429,
+        "delta_vs_base": -0.013392857142857095
+      }
+    },
+    "Q3": {
+      "BASE_full": {
+        "n": 222,
+        "acc": 0.8288288288288288
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 222,
+        "acc": 0.8288288288288288,
+        "delta_vs_base": 0.0
+      },
+      "B_minus_FarePerPerson": {
+        "n": 222,
+        "acc": 0.8153153153153153,
+        "delta_vs_base": -0.013513513513513487
+      },
+      "C_minus_Cabin": {
+        "n": 222,
+        "acc": 0.8198198198198198,
+        "delta_vs_base": -0.009009009009009028
+      }
+    },
+    "Q4": {
+      "BASE_full": {
+        "n": 222,
+        "acc": 0.8648648648648649
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 222,
+        "acc": 0.8693693693693694,
+        "delta_vs_base": 0.0045045045045044585
+      },
+      "B_minus_FarePerPerson": {
+        "n": 222,
+        "acc": 0.8468468468468469,
+        "delta_vs_base": -0.018018018018018056
+      },
+      "C_minus_Cabin": {
+        "n": 222,
+        "acc": 0.8468468468468469,
+        "delta_vs_base": -0.018018018018018056
+      }
+    },
+    "CabinKnown_0": {
+      "BASE_full": {
+        "n": 687,
+        "acc": 0.8529839883551674
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 687,
+        "acc": 0.8573508005822417,
+        "delta_vs_base": 0.004366812227074246
+      },
+      "B_minus_FarePerPerson": {
+        "n": 687,
+        "acc": 0.8558951965065502,
+        "delta_vs_base": 0.0029112081513827937
+      },
+      "C_minus_Cabin": {
+        "n": 687,
+        "acc": 0.8442503639010189,
+        "delta_vs_base": -0.008733624454148492
+      }
+    },
+    "CabinKnown_1": {
+      "BASE_full": {
+        "n": 204,
+        "acc": 0.8137254901960784
+      },
+      "A_minus_TicketGroupSize": {
+        "n": 204,
+        "acc": 0.8088235294117647,
+        "delta_vs_base": -0.004901960784313708
+      },
+      "B_minus_FarePerPerson": {
+        "n": 204,
+        "acc": 0.7892156862745098,
+        "delta_vs_base": -0.02450980392156865
+      },
+      "C_minus_Cabin": {
+        "n": 204,
+        "acc": 0.803921568627451,
+        "delta_vs_base": -0.009803921568627416
+      }
+    }
+  },
+  "precommitted_rule": "SIMPLIFY Final by dropping group X iff random \u0394 >= -0.001 AND group \u0394 >= +0.002. Else KEEP Final; a removal that hurts is evidence the group earns its keep.",
+  "elapsed_s": 212.3,
+  "gate_reasoning": {
+    "A_minus_TicketGroupSize": "drop ['TicketGroupSize']: random \u0394 +0.002247 (PASS >=-0.001) AND group \u0394 +0.008983 (PASS >=+0.002) -> SIMPLIFY (AND rule; removal that hurts = earns its keep).",
+    "B_minus_FarePerPerson": "drop ['FarePerPerson']: random \u0394 -0.003377 (FAIL <-0.001) AND group \u0394 +0.020219 (PASS >=+0.002) -> KEEP (AND rule; removal that hurts = earns its keep).",
+    "C_minus_Cabin": "drop ['CabinDeck', 'CabinKnown']: random \u0394 -0.008964 (FAIL <-0.001) AND group \u0394 +0.001149 (FAIL <+0.002) -> KEEP (AND rule; removal that hurts = earns its keep)."
+  },
+  "files_written": [
+    "reports/gap5_r4b.json",
+    "reports/figures/6x_r4b.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels_or_inference": true,
+    "no_forbidden_paths": true,
+    "no_src_configs_notebook_edits": true,
+    "no_tuning_against_public_scores": true,
+    "new_files_only": [
+      "reports/gap5_r4b.json",
+      "reports/figures/6x_r4b.png"
+    ]
+  },
+  "slice_notes": {
+    "A_minus_TicketGroupSize": "Q1 +0.0045, Q2 0.0000, Q3 0.0000, Q4 +0.0045; CabinKnown_0 +0.0044 (687), CabinKnown_1 -0.0049 (204). Removal helps/neutral everywhere except tiny known-cabin dip; consistent with both-CV gains.",
+    "B_minus_FarePerPerson": "Q1 +0.0135, Q2 +0.0045, Q3 -0.0135, Q4 -0.0180; CabinKnown_0 +0.0029, CabinKnown_1 -0.0245 (0.8137->0.7892). Helps cheap tickets, hurts expensive + known-cabin; matches random-hurt/group-help split.",
+    "C_minus_Cabin": "Q1 +0.0045, Q2 -0.0134, Q3 -0.0090, Q4 -0.0180; CabinKnown_0 -0.0087, CabinKnown_1 -0.0098 (both down). Broad hurt, incl. the subgroup cabin was meant to help; earns its keep.",
+    "edges": "Fare quartile edges [0.0, 7.9104, 14.4542, 31.0, 512.3292]; counts Q1 223/Q2 224/Q3 222/Q4 222; CabinKnown_0 687/CabinKnown_1 204; OOF via cross_val_predict random CV; base OOF acc 0.8440 reproduced."
+  },
+  "verdicts": {
+    "A_minus_TicketGroupSize": "SIMPLIFY",
+    "B_minus_FarePerPerson": "KEEP",
+    "C_minus_Cabin": "KEEP"
+  },
+  "summary": "A TicketGroupSize SIMPLIFY (random +0.00225 PASS, group +0.00898 PASS); B FarePerPerson KEEP (random -0.00338 FAIL, group +0.02022 PASS, AND fails); C Cabin KEEP (random -0.00896 FAIL, group +0.00115 FAIL). Only ticket-group removal passes pre-committed AND gate."
+}

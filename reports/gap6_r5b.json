@@ -1,0 +1,157 @@
+{
+  "worker": "R5B",
+  "task": "isotonic calibration + threshold landscape (descriptive-unless-gated)",
+  "context": {
+    "sigmoid_calibrated_RF_stored_gap2_e1": {
+      "random": 0.8462306195467957,
+      "group": 0.8069590717313044,
+      "brier": 0.12147746662464909
+    },
+    "uncalibrated_RF_stored_gap2_e1_reference": {
+      "random": 0.843977151465696,
+      "group": 0.7990811362702218,
+      "brier": 0.124021
+    },
+    "evidence_note": "Brier improved -0.0025 with sigmoid while accuracy moved only +0.0022; 0.5-0.6 confidence bin acc 0.653 (n=72)"
+  },
+  "protocol": {
+    "base": "from src.preprocessing import build_full_pipeline tuned RF(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1), scale_numeric=False",
+    "calibration_wrappers": "CalibratedClassifierCV(estimator=base_pipeline, method='sigmoid'/'isotonic', cv=5) [sklearn defaults ensemble='auto']; wrapper AROUND pipeline (same construction for sigmoid and isotonic)",
+    "splitters": "random: StratifiedKFold(n_splits=5, shuffle=True, random_state=42) accuracy; group: StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.strip() accuracy",
+    "sgkf_signature_verified": "(n_splits=5, shuffle=False, random_state=None) on sklearn 1.9.0 — supports shuffle=True, random_state=42 as constructed",
+    "groups": "X['Ticket'].astype(str).str.strip() (681 ticket groups; raw Ticket nunique also 681, stripping merges nothing but used per spec)",
+    "scoring": "accuracy at fixed 0.5; Brier via sklearn.metrics.brier_score_loss on cross_val_predict(method='predict_proba') OOF proba under random-CV",
+    "identical_splits": "all three candidates evaluated on identical outer partitions (fresh splitter objects with same seed each call; deterministic); no refit reuse across methods",
+    "std_convention": "population ddof=0",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden, never used/inferred",
+    "threshold_landscape_source": "SAVED data/processed/oof_errors_detailed.csv oof_proba only (n=891); accuracy at thresholds 0.3/0.4/0.5/0.6/0.7 computed as ((oof_proba>=thr)==Survived).mean(); DESCRIPTION ONLY, metric is accuracy@0.5 fixed",
+    "sklearn": "1.9.0",
+    "elapsed_s": {
+      "uncalibrated": 74.6,
+      "sigmoid": 118.0,
+      "isotonic": 95.5,
+      "total_approx": 288.1
+    },
+    "total_RF_fits_approx": "15 uncalibrated + 75 sigmoid (5 outer x 5 inner x 3 CV runs) + 75 isotonic = ~165 RF(500) fits"
+  },
+  "three_way_fresh_identical_splits": {
+    "uncalibrated": {
+      "random": {
+        "folds": [0.8603351955307262, 0.8370786516853933, 0.8202247191011236, 0.848314606741573, 0.8539325842696629],
+        "mean": 0.843977151465696,
+        "std_pop": 0.01412286875015432
+      },
+      "group": {
+        "folds": [0.8100558659217877, 0.8156424581005587, 0.807909604519774, 0.7808988764044944, 0.7808988764044944],
+        "mean": 0.7990811362702218,
+        "std_pop": 0.015058904813936414
+      },
+      "brier_random_OOF": 0.12402097661959521,
+      "oof_acc_from_proba_at_0.5": 0.8439955106621774
+    },
+    "sigmoid_cv5_fresh": {
+      "random": {
+        "folds": [0.8603351955307262, 0.8426966292134831, 0.8258426966292135, 0.848314606741573, 0.8595505617977528],
+        "mean": 0.8473479379825497,
+        "std_pop": 0.012669786217755524
+      },
+      "group": {
+        "folds": [0.8491620111731844, 0.8044692737430168, 0.847457627118644, 0.7808988764044944, 0.7921348314606742],
+        "mean": 0.8148245239800028,
+        "std_pop": 0.02834425996461709
+      },
+      "brier_random_OOF": 0.12096017293917583,
+      "oof_acc_from_proba_at_0.5": 0.8473625140291807
+    },
+    "isotonic_cv5": {
+      "random": {
+        "folds": [0.8659217877094972, 0.848314606741573, 0.8314606741573034, 0.848314606741573, 0.8314606741573034],
+        "mean": 0.84509446990145,
+        "std_pop": 0.012855166295321551
+      },
+      "group": {
+        "folds": [0.8547486033519553, 0.8044692737430168, 0.8361581920903954, 0.7808988764044944, 0.8089887640449438],
+        "mean": 0.8170527419269611,
+        "std_pop": 0.02575449319072092
+      },
+      "brier_random_OOF": 0.12145662142083433,
+      "oof_acc_from_proba_at_0.5": 0.8451178451178452
+    },
+    "ranking_random": ["sigmoid(0.84735)", "isotonic(0.84509)", "uncalibrated(0.84398)"],
+    "ranking_group": ["isotonic(0.81705)", "sigmoid(0.81482)", "uncalibrated(0.79908)"],
+    "ranking_brier_lower_is_better": ["sigmoid(0.12096)", "isotonic(0.12146)", "uncalibrated(0.12402)"]
+  },
+  "reproduction_note": {
+    "uncalibrated_reproduces_gap2_reference_exactly": true,
+    "uncalibrated_detail": "fresh random folds [0.86034,0.83708,0.82022,0.84831,0.85393] and group folds [0.81006,0.81564,0.80791,0.78090,0.78090] bit-match reports/gap2_e1.json reference; partitions and pipeline proven identical",
+    "sigmoid_fresh_vs_stored": "fresh sigmoid (0.84735/0.81482/Brier 0.12096) does NOT reproduce gap2_e1 stored C1 (0.84623/0.80696/Brier 0.12148); it DOES reproduce reports/gap3_r2b.json fresh R2B rebuild (seed-42 random [0.86034,0.84270,0.82584,0.84831,0.85955], group [0.84916,0.80447,0.84746,0.78090,0.79213], mean 0.8148245239800028). Gap isolated to calibration-wrapper configuration (e.g. ensemble flag / sklearn-version default ensemble='auto'->True) rather than splits, consistent with gap3_r2b c1_reproduction_note. Verdict uses as-rebuilt fresh three-way on identical splits per protocol.",
+    "isotonic_construction": "identical wrapper to fresh sigmoid except method='isotonic'; identical outer splits, so deltas are apples-to-apples"
+  },
+  "threshold_landscape_saved_oof": {
+    "source": "data/processed/oof_errors_detailed.csv (n=891; oof_proba from saved uncalibrated-RF OOF; thr 0.5 acc 0.843996 matches 0.8440 reference)",
+    "acc_at_threshold": {
+      "0.3": 0.797979797979798,
+      "0.4": 0.8260381593714927,
+      "0.5": 0.8439955106621774,
+      "0.6": 0.8372615039281706,
+      "0.7": 0.8305274971941639
+    },
+    "n_predicted_positive": {
+      "0.3": 410,
+      "0.4": 351,
+      "0.5": 317,
+      "0.6": 279,
+      "0.7": 245
+    },
+    "finding": "Accuracy peaks at the fixed 0.5 operating point (0.8440) and falls away on both sides (-0.0180 to 0.4, -0.0067 to 0.6, -0.0460 to 0.3, -0.0135 to 0.7): a gently peaked, relatively flat plateau within 0.4-0.6 (range 0.0180) that steepens below 0.4; no threshold selected or recommended, metric remains accuracy@0.5.",
+    "no_selection": true
+  },
+  "gate": {
+    "rule": "ADOPT isotonic (as recorded alternative, NOT production change) ONLY if random > 0.8440 AND group >= 0.7991-0.015 (=0.7840811362702218) AND Brier strictly best of the three fresh; else REJECT with reasons",
+    "thresholds": {
+      "random_gt": 0.844,
+      "group_ge": 0.7840811362702218
+    },
+    "evaluation": {
+      "random_0.84509446990145_gt_0.8440": {
+        "value": 0.84509446990145,
+        "delta_vs_0.8440": 0.0010944699014500392,
+        "delta_vs_fresh_uncal_0.843977": 0.0011173184357540363,
+        "pass": true,
+        "note": "passes by +0.0011, well within random std 0.0129 / ref 0.0141 noise"
+      },
+      "group_0.8170527419269611_ge_0.7840811362702218": {
+        "value": 0.8170527419269611,
+        "delta_vs_ref_0.799081": 0.0179716056567393,
+        "pass": true,
+        "note": "passes with margin +0.0330 above floor; group std 0.0258"
+      },
+      "brier_strictly_best_of_three": {
+        "isotonic": 0.12145662142083433,
+        "sigmoid": 0.12096017293917583,
+        "uncalibrated": 0.12402097661959521,
+        "isotonic_minus_sigmoid": 0.0004964484816584981,
+        "isotonic_minus_uncal": -0.0025643551987608806,
+        "is_best": false,
+        "pass": false,
+        "note": "FAILS: sigmoid 0.12096 is best by 0.00050 over isotonic; isotonic improves -0.00256 over uncalibrated but does not beat sigmoid"
+      }
+    },
+    "all_pass": false
+  },
+  "verdict": "REJECT",
+  "verdict_reason": "REJECT isotonic as recorded alternative: 2/3 gates pass (random 0.84509>0.8440 PASS; group 0.81705>=0.78408 PASS) but Brier gate FAILS — isotonic Brier 0.12146 is not strictly best of fresh three (sigmoid 0.12096 best, leads by 0.00050). Isotonic improves Brier -0.00256 over uncalibrated 0.12402 and lifts accuracy (+0.00112 random, +0.01797 group vs fresh uncal), yet sigmoid dominates random (+0.00225 over isotonic) and Brier while isotonic only leads group (+0.00223 over sigmoid, within group std 0.0258-0.0283 noise). Pre-committed rule requires all three; not met. No production change regardless.",
+  "production_untouched": true,
+  "files_written": ["reports/gap6_r5b.json", "reports/figures/7x_r5b.png"],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_notebook_edits": true,
+    "no_tuning_against_public_scores": true,
+    "no_threshold_selection": true,
+    "no_test_inference": true,
+    "production_model_submission_untouched": true
+  }
+}

@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "sklearn_version": "1.9.0",
+    "splitter_construction": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0 (signature (n_splits=5, shuffle=False, random_state=None); shuffle=True+random_state=42 supported and used)",
+    "sgkf_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "model": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) inside src.preprocessing.build_full_pipeline (production feature set)",
+    "scoring": "accuracy",
+    "random_cv_reference": {
+      "splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42) via src.models.make_cv()",
+      "mean": 0.843977151465696,
+      "std_pop": 0.0141,
+      "folds": [
+        0.8603,
+        0.8371,
+        0.8202,
+        0.8483,
+        0.8539
+      ],
+      "note": "preserved, not recomputed; std approx"
+    },
+    "kaggle_note": "Kaggle 0.75358 RECORD ONLY, test labels hidden/never used",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived)",
+    "seeds_fixed": "random_state=42 everywhere (model + both splitters)"
+  },
+  "groups": {
+    "ticket": {
+      "definition": "G1 Ticket: group key = raw Ticket string stripped of whitespace (X['Ticket'].astype(str).str.strip()). Reasoning: passengers sharing a ticket booked/traveled together, share fare, cabin proximity and fate/info; TicketGroupSize/FarePerPerson features are ticket-derived so random splits leak ticket-level info.",
+      "n_groups": 681,
+      "size_stats": {
+        "n_rows": 891,
+        "n_groups": 681,
+        "min": 1,
+        "max": 7,
+        "mean": 1.3083700440528634,
+        "median": 1.0,
+        "std_sample": 0.792652185006412,
+        "std_pop": 0.7920699945606183,
+        "n_singletons": 547,
+        "n_size2": 94,
+        "n_size3": 21,
+        "n_size4": 11,
+        "n_size5plus": 8,
+        "size_distribution": {
+          "1": 547,
+          "2": 94,
+          "3": 21,
+          "4": 11,
+          "5": 2,
+          "6": 3,
+          "7": 3
+        },
+        "largest_groups": {
+          "347082": 7,
+          "1601": 7,
+          "CA. 2343": 7,
+          "3101295": 6,
+          "CA 2144": 6
+        }
+      }
+    },
+    "surname": {
+      "definition": "G2 Surname: group key = surname extracted via src.feature_engineering.extract_surname(Name) (text before comma). Reasoning: same surname signals family/household with correlated survival (women/children priority, family decisions); keeps family members together so model cannot memorize surname-linked patterns via correlated features.",
+      "n_groups": 667,
+      "size_stats": {
+        "n_rows": 891,
+        "n_groups": 667,
+        "min": 1,
+        "max": 9,
+        "mean": 1.3358320839580209,
+        "median": 1.0,
+        "std_sample": 0.8549218157827101,
+        "std_pop": 0.8542807044696084,
+        "n_singletons": 534,
+        "n_size2": 83,
+        "n_size3": 28,
+        "n_size4": 14,
+        "n_size5plus": 8,
+        "size_distribution": {
+          "1": 534,
+          "2": 83,
+          "3": 28,
+          "4": 14,
+          "5": 1,
+          "6": 5,
+          "7": 1,
+          "9": 1
+        },
+        "largest_groups": {
+          "Andersson": 9,
+          "Sage": 7,
+          "Johnson": 6,
+          "Panula": 6,
+          "Goodwin": 6
+        }
+      }
+    },
+    "family_ticket": {
+      "definition": "G3 Family_Ticket joint key: Surname + '__' + Ticket (surname from extract_surname joined with stripped Ticket). Reasoning: strictest travel-party key; separates (a) same surname on different tickets (split families) and (b) same ticket shared by different surnames (joint bookings), testing whether leakage comes from ticket groups, surname groups, or their intersection.",
+      "n_groups": 739,
+      "size_stats": {
+        "n_rows": 891,
+        "n_groups": 739,
+        "min": 1,
+        "max": 7,
+        "mean": 1.205683355886333,
+        "median": 1.0,
+        "std_sample": 0.6612955686680068,
+        "std_pop": 0.6608479912436914,
+        "n_singletons": 640,
+        "n_size2": 72,
+        "n_size3": 14,
+        "n_size4": 7,
+        "n_size5plus": 6,
+        "size_distribution": {
+          "1": 640,
+          "2": 72,
+          "3": 14,
+          "4": 7,
+          "5": 1,
+          "6": 3,
+          "7": 2
+        },
+        "largest_groups": {
+          "Andersson__347082": 7,
+          "Sage__CA. 2343": 7,
+          "Panula__3101295": 6,
+          "Goodwin__CA 2144": 6,
+          "Skoog__347088": 6
+        }
+      }
+    }
+  },
+  "results": [
+    {
+      "strategy": "group_ticket",
+      "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0 (signature (n_splits=5, shuffle=False, random_state=None); shuffle=True+random_state=42 supported and used)",
+      "groups_used": "ticket",
+      "scoring": "accuracy",
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "std_pop": 0.015058904813936414,
+      "std_sample": 0.016836367415330324,
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ],
+      "n_splits": 5
+    },
+    {
+      "strategy": "group_surname",
+      "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0 (signature (n_splits=5, shuffle=False, random_state=None); shuffle=True+random_state=42 supported and used)",
+      "groups_used": "surname",
+      "scoring": "accuracy",
+      "mean": 0.8158048360701992,
+      "std": 0.019173439032097592,
+      "std_pop": 0.019173439032097592,
+      "std_sample": 0.021436556519108994,
+      "folds": [
+        0.8333333333333334,
+        0.8125,
+        0.8111111111111111,
+        0.8379888268156425,
+        0.7840909090909091
+      ],
+      "n_splits": 5
+    },
+    {
+      "strategy": "group_family_ticket",
+      "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0 (signature (n_splits=5, shuffle=False, random_state=None); shuffle=True+random_state=42 supported and used)",
+      "groups_used": "family_ticket",
+      "scoring": "accuracy",
+      "mean": 0.8137106159673291,
+      "std": 0.02653008874721439,
+      "std_pop": 0.02653008874721439,
+      "std_sample": 0.029661540943936807,
+      "folds": [
+        0.848314606741573,
+        0.8314606741573034,
+        0.7696629213483146,
+        0.8135593220338984,
+        0.8055555555555556
+      ],
+      "n_splits": 5
+    }
+  ],
+  "overlap": {
+    "ticket_pct_per_fold": [
+      34.63687150837989,
+      33.146067415730336,
+      38.764044943820224,
+      31.46067415730337,
+      33.146067415730336
+    ],
+    "ticket_mean": 34.230745088192826,
+    "surname_pct_per_fold": [
+      38.547486033519554,
+      32.02247191011236,
+      38.764044943820224,
+      34.831460674157306,
+      34.831460674157306
+    ],
+    "surname_mean": 35.79938484715335,
+    "method": "For each of 5 folds from src.models.make_cv() (StratifiedKFold(5, shuffle=True, random_state=42)), % of validation rows whose Ticket (stripped) / Surname (extract_surname) value appears anywhere in that fold's train split."
+  },
+  "hypothesis_note": "Group-CV means (ticket ~0.799, surname ~0.816, family_ticket ~0.814) are 0.028-0.045 below preserved random-CV mean 0.844, while ~34.2% of validation tickets and ~35.8% of validation surnames overlap train in random CV. This supports the hypothesis that random CV is optimistic because ticket/family-correlated passengers (shared fate, shared fare/cabin features like TicketGroupSize/FarePerPerson) leak across folds; group-CV removes that leakage and is closer to unseen-party generalization, directionally consistent with the recorded Kaggle gap 0.75358 (record only, no tuning on it)."
+}

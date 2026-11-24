@@ -1,0 +1,137 @@
+{
+  "variants": [
+    {
+      "name": "cabin_deck_other_AGTF",
+      "rationale": "Known-cabin slice weak (0.814) and tiny decks A(15)/F(13)/G(4)/T(1) create sparse one-hot columns with unstable RF splits (F/T have 0 error on n<=13, likely noise). Merging A/G/T/F into 'Other' (n=33) reduces CabinDeck cardinality 9->6 while preserving Missing/B/C/D/E signals; error-analysis expects stabler cabin splits without losing known-vs-missing info.",
+      "leakage_note": "Target-free and fold-safe: stateless deterministic row-wise remap of engineered CabinDeck via Pipeline step after TitanicFeatureEngineer (copy/transform in-script, src/feature_engineering.py untouched). No fitted state, no use of Survived, no test peeking; identical transform applied inside each CV fold via Pipeline. OneHotEncoder(handle_unknown=ignore) still guards unseen levels.",
+      "random": {
+        "mean": 0.8451007469713139,
+        "std": 0.012293455033895407,
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8258426966292135,
+          0.848314606741573,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.7968339452589859,
+        "std": 0.018129757467422288,
+        "folds": [
+          0.8156424581005587,
+          0.8100558659217877,
+          0.807909604519774,
+          0.7696629213483146,
+          0.7808988764044944
+        ]
+      }
+    },
+    {
+      "name": "title_rare_into_mr",
+      "rationale": "Rare-title slice weakest (n=23, acc 0.739, survival 0.348 vs Mr 0.157). Rare one-hot column is sparse (23/891) and mixes heterogeneous titles (Rev/Dr/Col/Major/Capt/nobility, 20 male + 3 female), likely causing high-variance splits (impurity Title_Rare ranks in top10 despite sparsity). Merging Rare into Mr (majority male title, n=517) tests whether collapsing sparsity helps; keeps female-Rare nuance loss as known cost.",
+      "leakage_note": "Target-free and fold-safe: stateless deterministic row-wise replace Rare->Mr via Pipeline step after TitanicFeatureEngineer. No fitted statistics, no Survived use, no test-distribution peeking; applied identically inside each fold. Does not use group labels or outcomes.",
+      "random": {
+        "mean": 0.8383717280773336,
+        "std": 0.015356969124383113,
+        "folds": [
+          0.8491620111731844,
+          0.8258426966292135,
+          0.8146067415730337,
+          0.848314606741573,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.8024771729212171,
+        "std": 0.01468043847619377,
+        "folds": [
+          0.8212290502793296,
+          0.7932960893854749,
+          0.8192090395480226,
+          0.7865168539325843,
+          0.7921348314606742
+        ]
+      }
+    },
+    {
+      "name": "age_title_median_impute",
+      "rationale": "Age missing 177/891; global median 28.0 misrepresents Title-conditional ages (Master 3.5, Miss 21, Mr 30, Mrs 35, Rare 48.5) and teens slice weak (0.800). Title-group median should give more plausible ages for children/masters and older Rare, reducing bias vs global median; production base uses global median via SimpleImputer.",
+      "leakage_note": "Target-free and fold-safe: proper sklearn transformer (fit/transform) placed AFTER TitanicFeatureEngineer and BEFORE preprocess inside the CV Pipeline, so medians are learned on each training fold only (uses only Age+Title feature columns, y ignored, never Survived). Validation/test folds transformed with train-fold medians; unseen Title falls back to train-fold global median. No test peeking, no label use. Downstream SimpleImputer(median) becomes no-op for Age but still handles other numerics.",
+      "random": {
+        "mean": 0.8417425145941875,
+        "std": 0.0157263664435478,
+        "folds": [
+          0.8491620111731844,
+          0.8595505617977528,
+          0.8202247191011236,
+          0.8258426966292135,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.7979763719741954,
+        "std": 0.010087111638798657,
+        "folds": [
+          0.8044692737430168,
+          0.8044692737430168,
+          0.807909604519774,
+          0.7921348314606742,
+          0.7808988764044944
+        ]
+      }
+    }
+  ],
+  "base": {
+    "numeric": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "IsAlone",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "model": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1)",
+    "random_cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42) via src.models.make_cv(), scoring=accuracy",
+    "group_cv": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket (X['Ticket'].astype(str).str.strip()), scoring=accuracy",
+    "random": {
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ]
+    },
+    "group": {
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ]
+    }
+  },
+  "recommendation": {
+    "adopt_bool": false,
+    "candidate_or_null": null,
+    "reason": "REJECT all: no variant shows a real improvement under pre-committed rule (need random>0.8440 AND group>=0.7841 i.e. 0.7991-0.015). cabin_deck_other_AGTF random 0.8451 technically >0.8440 but gain is +0.0011 vs base (+1 correct in fold-3 only, 0.8202->0.8258; <0.1x pop-std 0.012-0.014, well within CV noise) and group 0.7968 is -0.0022 vs base 0.7991 (within noise band but directionally worse); adopting added regrouping complexity for noise would be CV overfitting, so REJECT despite numeric pass. title_rare_into_mr random 0.8384 (-0.0056 vs base, fails >0.8440) with group 0.8025 (+0.0034, passes floor) — merging Rare (surv 0.348) into Mr (0.157) dilutes signal, REJECT. age_title_median_impute random 0.8417 (-0.0022, fails) with group 0.7980 (-0.0011, within noise) — Title-conditional medians do not help RF, REJECT. No production change."
+  }
+}

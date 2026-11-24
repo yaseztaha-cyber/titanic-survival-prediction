@@ -1,0 +1,180 @@
+{
+  "worker": "V2 Worker A (nested target encoding)",
+  "working_directory": "D:\\YASEZ_HOME\\projects\\titanic sceniro project",
+  "meta": {
+    "sklearn_version": "1.9.0",
+    "sgkf_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "splitter_construction_random": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    "splitter_construction_group": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0 (shuffle=True+random_state=42 supported and used; signature verified at runtime via inspect.signature)",
+    "groups_definition": "group key = raw Ticket string stripped of whitespace (X['Ticket'].astype(str).str.strip()); n_groups=681",
+    "model": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) throughout",
+    "production_set": {
+      "numeric": ["Age", "Fare", "SibSp", "Parch", "FamilySize", "IsAlone", "TicketGroupSize", "FarePerPerson", "CabinKnown", "Mother"],
+      "categorical": ["Pclass", "Sex", "Embarked", "Title", "CabinDeck", "FamilySizeCategory"]
+    },
+    "scoring": "accuracy at fixed 0.5; OOF Brier via sklearn.metrics.brier_score_loss on cross_val manual-loop predict_proba OOF under random-CV (single fit per fold yields acc+Brier)",
+    "data": "data/raw/train.csv only (X=train minus Survived, y=Survived; 891 rows). Test labels hidden — never used/inferred.",
+    "seeds_fixed": "random_state=42 everywhere (model + both splitters)",
+    "fits": "5 configs x (5 random + 5 group) = 50 fits + OOF Brier from same random fits (manual clone-per-fold loop)",
+    "reference_random_mean": 0.843977151465696,
+    "reference_random_folds": [0.8603351955307262, 0.8370786516853933, 0.8202247191011236, 0.848314606741573, 0.8539325842696629],
+    "reference_group_mean": 0.7990811362702218,
+    "reference_group_folds": [0.8100558659217877, 0.8156424581005587, 0.807909604519774, 0.7808988764044944, 0.7808988764044944],
+    "reference_oof_brier": 0.12402097661959521,
+    "compliance": "No test labels used/inferred. No C:\\Users\\DELL\\Downloads, D:\\Downloads, github raw fetches, web label search, Kaggle API. External board scores excluded from ALL gates (selection internal-only). No writes to experiment_results.json, extended_results.json, submission.csv, models/, notebooks/01-13, src/*.py, configs/*.py, app.py, README.md."
+  },
+  "encoder": {
+    "class": "TargetMeanEncoder(cols, alpha) implemented in experiment script (not in src/*.py)",
+    "formula": "m = (count*cat_mean + alpha*global_mean)/(count+alpha) on TRAIN FOLD ONLY; transform maps categories, unseen -> global mean",
+    "placement": "Pipeline steps = [('features', TitanicFeatureEngineer()), ('targetenc', TargetMeanEncoder), ('preprocess', ColumnTransformer), ('model', RF)] so encoder sits inside outer CV folds",
+    "preprocess_variant": "numeric = NUMERIC_FEATURES + encode_cols (median impute); categorical_remaining = CATEGORICAL_FEATURES minus encode_cols (most_frequent + OneHotEncoder(handle_unknown=ignore, sparse_output=False))",
+    "preprocess_baseline": "src.preprocessing.build_full_pipeline(RF, scale_numeric=False) bit-for-bit production"
+  },
+  "fold_safety": "Fold safety holds because the encoder is a Pipeline stage after TitanicFeatureEngineer and before the ColumnTransformer/estimator, so outer StratifiedKFold and StratifiedGroupKFold clone and fit the entire Pipeline per fold: TargetMeanEncoder.fit(X_train_fold_engineered, y_train_fold) learns only fold-train per-category counts/means and the fold-train global mean, and transform applied to the held-out fold maps seen categories to those smoothed means and unseen categories to the fold-train global mean without ever seeing validation labels; TitanicFeatureEngineer similarly learns ticket counts on fold-train only, and imputers/one-hot are fit inside the same fold, so no target or validation-distribution information crosses the fold boundary.",
+  "baseline_check": {
+    "recomputed_random_mean": 0.843977151465696,
+    "reference_random_mean": 0.843977151465696,
+    "abs_diff": 0.0,
+    "max_fold_abs_diff": 0.0,
+    "pass_1e9": true,
+    "note": "one-hot baseline recomputed via build_full_pipeline equals reference within 1e-9 (exact)"
+  },
+  "configs": {
+    "baseline_onehot": {
+      "encode_cols": null,
+      "alpha": null,
+      "random_mean": 0.843977151465696,
+      "random_std_pop": 0.01412286875015432,
+      "random_std_sample": 0.015789847281326277,
+      "random_folds": [0.8603351955307262, 0.8370786516853933, 0.8202247191011236, 0.848314606741573, 0.8539325842696629],
+      "group_mean": 0.7990811362702218,
+      "group_std_pop": 0.015058904813936414,
+      "group_std_sample": 0.016836367415330324,
+      "group_folds": [0.8100558659217877, 0.8156424581005587, 0.807909604519774, 0.7808988764044944, 0.7808988764044944],
+      "oof_brier": 0.12402097661959521,
+      "oof_accuracy": 0.8439955106621774,
+      "fold_wins_vs_baseline": "n/a"
+    },
+    "enc_Title_CabinDeck_a20": {
+      "encode_cols": ["Title", "CabinDeck"],
+      "alpha": 20,
+      "random_mean": 0.8417425145941874,
+      "random_std_pop": 0.009121288817097443,
+      "random_std_sample": 0.010197910918719263,
+      "random_folds": [0.8491620111731844, 0.8258426966292135, 0.8370786516853933, 0.848314606741573, 0.848314606741573],
+      "group_mean": 0.8047307828570031,
+      "group_std_pop": 0.018425527204302062,
+      "group_std_sample": 0.020600365675045536,
+      "group_folds": [0.8212290502793296, 0.7988826815642458, 0.8305084745762712, 0.7808988764044944, 0.7921348314606742],
+      "oof_brier": 0.12455116412199016,
+      "oof_accuracy": 0.8417508417508418,
+      "fold_wins_vs_baseline": "1/5",
+      "fold_wins_count": 1,
+      "fold_deltas_vs_baseline": [-0.011173184357541888, -0.011235955056179803, 0.016853932584269704, 0.0, -0.005617977528089901]
+    },
+    "enc_Title_CabinDeck_a100": {
+      "encode_cols": ["Title", "CabinDeck"],
+      "alpha": 100,
+      "random_mean": 0.8428661100998054,
+      "random_std_pop": 0.007246919974355251,
+      "random_std_sample": 0.008102302845079687,
+      "random_folds": [0.8491620111731844, 0.8314606741573034, 0.8370786516853933, 0.848314606741573, 0.848314606741573],
+      "group_mean": 0.8069906698626527,
+      "group_std_pop": 0.02182745406532173,
+      "group_std_sample": 0.024403835532906763,
+      "group_folds": [0.8212290502793296, 0.7988826815642458, 0.8418079096045198, 0.7808988764044944, 0.7921348314606742],
+      "oof_brier": 0.12440966503298703,
+      "oof_accuracy": 0.8428731762065096,
+      "fold_wins_vs_baseline": "1/5",
+      "fold_wins_count": 1,
+      "fold_deltas_vs_baseline": [-0.011173184357541888, -0.005617977528089901, 0.016853932584269704, 0.0, -0.005617977528089901]
+    },
+    "enc_Title_CabinDeck_Pclass_a20": {
+      "encode_cols": ["Title", "CabinDeck", "Pclass"],
+      "alpha": 20,
+      "random_mean": 0.8417425145941874,
+      "random_std_pop": 0.009121288817097443,
+      "random_std_sample": 0.010197910918719263,
+      "random_folds": [0.8491620111731844, 0.8258426966292135, 0.8370786516853933, 0.848314606741573, 0.848314606741573],
+      "group_mean": 0.8036134644212488,
+      "group_std_pop": 0.018909310867429596,
+      "group_std_sample": 0.021141252253624045,
+      "group_folds": [0.8212290502793296, 0.7932960893854749, 0.8305084745762712, 0.7808988764044944, 0.7921348314606742],
+      "oof_brier": 0.12437403482788546,
+      "oof_accuracy": 0.8417508417508418,
+      "fold_wins_vs_baseline": "1/5",
+      "fold_wins_count": 1,
+      "fold_deltas_vs_baseline": [-0.011173184357541888, -0.011235955056179803, 0.016853932584269704, 0.0, -0.005617977528089901]
+    },
+    "enc_Title_CabinDeck_Pclass_a100": {
+      "encode_cols": ["Title", "CabinDeck", "Pclass"],
+      "alpha": 100,
+      "random_mean": 0.8417425145941874,
+      "random_std_pop": 0.009121288817097443,
+      "random_std_sample": 0.010197910918719263,
+      "random_folds": [0.8491620111731844, 0.8258426966292135, 0.8370786516853933, 0.848314606741573, 0.848314606741573],
+      "group_mean": 0.8047560329911445,
+      "group_std_pop": 0.023079189283302534,
+      "group_std_sample": 0.02580331805152456,
+      "group_folds": [0.8212290502793296, 0.7877094972067039, 0.8418079096045198, 0.7808988764044944, 0.7921348314606742],
+      "oof_brier": 0.12416302699976633,
+      "oof_accuracy": 0.8417508417508418,
+      "fold_wins_vs_baseline": "1/5",
+      "fold_wins_count": 1,
+      "fold_deltas_vs_baseline": [-0.011173184357541888, -0.011235955056179803, 0.016853932584269704, 0.0, -0.005617977528089901]
+    }
+  },
+  "precommitted_rule": "ADOPT only if config beats random 0.8440 AND group >= 0.7991-0.015 (=0.7840811362702218 using reference 0.7990811362702218) AND Brier strictly best (lowest of all 5) AND >=4/5 random fold-wins vs baseline. Else REJECT. All selection internal-only; no external scores in gates.",
+  "gate_evaluation": {
+    "random_threshold": 0.844,
+    "group_floor": 0.7840811362702218,
+    "brier_best_value": 0.12402097661959521,
+    "brier_best_holder": "baseline_onehot (lower is better)",
+    "per_config": {
+      "enc_Title_CabinDeck_a20": {
+        "random_gt_0_8440": false,
+        "random_detail": "0.8417425145941874 <= 0.8440 FAIL (-0.00226)",
+        "group_ge_floor": true,
+        "group_detail": "0.8047307828570031 >= 0.7840811362702218 PASS (+0.00565 vs ref 0.79908, within group-std 0.0184 noise)",
+        "brier_strictly_best": false,
+        "brier_detail": "0.12455116412199016 vs best 0.12402097661959521 FAIL (+0.00053 worse than baseline)",
+        "fold_wins_ge_4_5": false,
+        "fold_wins_detail": "1/5 FAIL (only fold2 wins +0.01685; folds 0/1/4 lose, fold3 tie)"
+      },
+      "enc_Title_CabinDeck_a100": {
+        "random_gt_0_8440": false,
+        "random_detail": "0.8428661100998054 <= 0.8440 FAIL (-0.00111; closest challenger)",
+        "group_ge_floor": true,
+        "group_detail": "0.8069906698626527 >= 0.7840811362702218 PASS (+0.00791 vs ref, within group-std 0.0218 noise)",
+        "brier_strictly_best": false,
+        "brier_detail": "0.12440966503298703 vs best 0.12402097661959521 FAIL (+0.00039 worse)",
+        "fold_wins_ge_4_5": false,
+        "fold_wins_detail": "1/5 FAIL (only fold2 wins +0.01685; folds 0/1/4 lose, fold3 tie)"
+      },
+      "enc_Title_CabinDeck_Pclass_a20": {
+        "random_gt_0_8440": false,
+        "random_detail": "0.8417425145941874 <= 0.8440 FAIL (-0.00223)",
+        "group_ge_floor": true,
+        "group_detail": "0.8036134644212488 >= 0.7840811362702218 PASS (+0.00453 vs ref, within group-std 0.0189 noise)",
+        "brier_strictly_best": false,
+        "brier_detail": "0.12437403482788546 vs best 0.12402097661959521 FAIL (+0.00035 worse)",
+        "fold_wins_ge_4_5": false,
+        "fold_wins_detail": "1/5 FAIL (only fold2 wins +0.01685; folds 0/1/4 lose, fold3 tie)"
+      },
+      "enc_Title_CabinDeck_Pclass_a100": {
+        "random_gt_0_8440": false,
+        "random_detail": "0.8417425145941874 <= 0.8440 FAIL (-0.00223)",
+        "group_ge_floor": true,
+        "group_detail": "0.8047560329911445 >= 0.7840811362702218 PASS (+0.00567 vs ref, within group-std 0.0231 noise)",
+        "brier_strictly_best": false,
+        "brier_detail": "0.12416302699976633 vs best 0.12402097661959521 FAIL (+0.00014 worse; best challenger Brier but still not strictly best overall)",
+        "fold_wins_ge_4_5": false,
+        "fold_wins_detail": "1/5 FAIL (only fold2 wins +0.01685; folds 0/1/4 lose, fold3 tie)"
+      }
+    }
+  },
+  "verdict": "REJECT",
+  "verdict_reason": "REJECT all 4 target-encoding variants: 1/4 gates pass (group floor) but 3/4 fail per pre-commitment. No variant beats random 0.8440 (best 0.84287 < 0.8440, deltas -0.00111 to -0.00223); no variant has strictly best Brier (baseline 0.124021 best, challengers 0.12416-0.12455 worse by +0.00014 to +0.00053); all have only 1/5 fold-wins (need >=4/5; sole win is fold2 +0.01685, offset by losses on folds 0/1/4 and tie on fold3). Group lifts (+0.0045 to +0.0079 over 0.79908) are within group-std noise (0.018-0.023) and cannot promote alone under AND-rule. Smoothed means do not improve RF one-hot on this split despite Title/CabinDeck sparsity hypothesis.",
+  "files_written": ["reports/v2_encoding.json", "reports/figures/10x_enc.png"],
+  "notes": "Tuned RF500/d12 throughout, production set otherwise identical. Baseline recomputed exact (diff 0.0). Brier ranking lower-is-better: baseline 0.124021 < Pclass_a100 0.124163 < Pclass_a20 0.124374 < TitleCabin_a100 0.124410 < TitleCabin_a20 0.124551."
+}

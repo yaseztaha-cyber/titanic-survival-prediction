@@ -1,0 +1,332 @@
+{
+  "worker": "R3A",
+  "representation": "Fare bins REPLACE raw Fare: numeric 10->9 REMOVE Fare (keep Age,SibSp,Parch,FamilySize,TicketGroupSize,FarePerPerson,IsAlone,CabinKnown,Mother); categorical 6->7 ADD FareBinQ4 (QuantileBinner q=4, fit on train-fold median-imputed Fare via pd.qcut duplicates=drop, transform np.digitize right=True + clip, drop Fare; Pipeline [features=TitanicFeatureEngineer(), binner=QuantileBinner, preprocess=ColumnTransformer median/most-frequent+OneHot(ignore), model=tuned RF]; no y, no test distribution, no Survived)",
+  "reference": {
+    "tuned_RF_random_mean": 0.843977151465696,
+    "tuned_RF_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_RF_group_mean": 0.7990811362702218,
+    "rf_params": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "numeric": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "IsAlone",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ]
+  },
+  "protocol": {
+    "base_builder": "TitanicFeatureEngineer + ColumnTransformer(median/most-frequent + OneHot(handle_unknown=ignore, sparse_output=False)) over 10 numeric + 6 categorical + tuned RF (config order)",
+    "variant_builder": "Pipeline [features=TitanicFeatureEngineer(), binner=QuantileBinner(Fare,q=4->FareBinQ4,drop Fare), preprocess=ColumnTransformer(median/most-frequent + OneHot(ignore) over 9 numeric + 7 categorical incl FareBinQ4), model=tuned RF]",
+    "random_splitter": "StratifiedKFold(5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(5, shuffle=True, random_state=42)",
+    "group_splitter_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "groups": "Ticket.astype(str).str.strip()",
+    "scoring": "accuracy",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden never used/inferred (only transform check for 1044, no predict)",
+    "sklearn": "1.9.0",
+    "oof_slices": "cross_val_predict with random CV on both pipes; Fare quartiles Q1-Q4 via full-train Fare quantiles (pd.cut on quantile edges)",
+    "std_convention": "population ddof=0",
+    "elapsed_s": 61.9
+  },
+  "binner": {
+    "class": "QuantileBinner(column=Fare,q=4,out_col=FareBinQ4)",
+    "fit": "median_=train-fold Fare.median(); fare_filled=Fare.fillna(median_); _,bins=pd.qcut(fare_filled,q=4,retbins=True,duplicates=drop)",
+    "transform": "fillna(median_); clip to [bins0,bins-1]; np.digitize(clipped, bins[1:-1], right=True); clip idx to [0,n_bins-1]; map to Q1..Qn; drop Fare",
+    "leakage": "no y, no test distribution, no Survived; fitted inside each CV fold as Pipeline step after features",
+    "global_train_quantile_edges": [
+      0.0,
+      7.9104,
+      14.4542,
+      31.0,
+      512.3292
+    ],
+    "test_1044_flow": {
+      "median_example": 14.4542,
+      "bins": [
+        0.0,
+        7.9104,
+        14.4542,
+        31.0,
+        512.3292
+      ],
+      "labels": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4"
+      ],
+      "farebin_for_1044": "Q2",
+      "nan_in_FareBinQ4": 0,
+      "note": "transform-only check, no test predict, no labels"
+    }
+  },
+  "results": {
+    "base_random": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262
+    },
+    "variant_random": {
+      "folds": [
+        0.8324022346368715,
+        0.8202247191011236,
+        0.8146067415730337,
+        0.848314606741573,
+        0.848314606741573
+      ],
+      "mean": 0.8327725817588348,
+      "std": 0.01393336172681749,
+      "min": 0.8146067415730337,
+      "max": 0.848314606741573
+    },
+    "base_group": {
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ],
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "min": 0.7808988764044944,
+      "max": 0.8156424581005587
+    },
+    "variant_group": {
+      "folds": [
+        0.8156424581005587,
+        0.8156424581005587,
+        0.8248587570621468,
+        0.7471910112359551,
+        0.7865168539325843
+      ],
+      "mean": 0.7979703076863608,
+      "std": 0.028486196872332253,
+      "min": 0.7471910112359551,
+      "max": 0.8248587570621468
+    },
+    "delta_random": -0.011204569706861123,
+    "delta_group": -0.0011108285838610232,
+    "fold_wins_random": {
+      "wins": 0,
+      "ties": 1,
+      "losses": 4,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8603351955307262,
+          "variant": 0.8324022346368715,
+          "delta": -0.027932960893854775,
+          "result": "loss"
+        },
+        {
+          "fold": 1,
+          "base": 0.8370786516853933,
+          "variant": 0.8202247191011236,
+          "delta": -0.016853932584269704,
+          "result": "loss"
+        },
+        {
+          "fold": 2,
+          "base": 0.8202247191011236,
+          "variant": 0.8146067415730337,
+          "delta": -0.005617977528089901,
+          "result": "loss"
+        },
+        {
+          "fold": 3,
+          "base": 0.848314606741573,
+          "variant": 0.848314606741573,
+          "delta": 0.0,
+          "result": "tie"
+        },
+        {
+          "fold": 4,
+          "base": 0.8539325842696629,
+          "variant": 0.848314606741573,
+          "delta": -0.005617977528089901,
+          "result": "loss"
+        }
+      ]
+    },
+    "fold_wins_group": {
+      "wins": 3,
+      "ties": 1,
+      "losses": 1,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8100558659217877,
+          "variant": 0.8156424581005587,
+          "delta": 0.005586592178770999,
+          "result": "win"
+        },
+        {
+          "fold": 1,
+          "base": 0.8156424581005587,
+          "variant": 0.8156424581005587,
+          "delta": 0.0,
+          "result": "tie"
+        },
+        {
+          "fold": 2,
+          "base": 0.807909604519774,
+          "variant": 0.8248587570621468,
+          "delta": 0.016949152542372836,
+          "result": "win"
+        },
+        {
+          "fold": 3,
+          "base": 0.7808988764044944,
+          "variant": 0.7471910112359551,
+          "delta": -0.0337078651685393,
+          "result": "loss"
+        },
+        {
+          "fold": 4,
+          "base": 0.7808988764044944,
+          "variant": 0.7865168539325843,
+          "delta": 0.005617977528089901,
+          "result": "win"
+        }
+      ]
+    }
+  },
+  "slices_oof_random": {
+    "Q1": {
+      "n": 223,
+      "base_acc": 0.8699551569506726,
+      "var_acc": 0.8609865470852018,
+      "delta": -0.008968609865470767,
+      "base_err": 0.1300448430493274,
+      "var_err": 0.13901345291479816,
+      "base_errors": 29,
+      "var_errors": 31
+    },
+    "Q2": {
+      "n": 224,
+      "base_acc": 0.8125,
+      "var_acc": 0.8035714285714286,
+      "delta": -0.008928571428571397,
+      "base_err": 0.1875,
+      "var_err": 0.1964285714285714,
+      "base_errors": 42,
+      "var_errors": 44
+    },
+    "Q3": {
+      "n": 222,
+      "base_acc": 0.8288288288288288,
+      "var_acc": 0.8153153153153153,
+      "delta": -0.013513513513513487,
+      "base_err": 0.1711711711711712,
+      "var_err": 0.18468468468468469,
+      "base_errors": 38,
+      "var_errors": 41
+    },
+    "Q4": {
+      "n": 222,
+      "base_acc": 0.8648648648648649,
+      "var_acc": 0.8513513513513513,
+      "delta": -0.013513513513513598,
+      "base_err": 0.1351351351351351,
+      "var_err": 0.14864864864864868,
+      "base_errors": 30,
+      "var_errors": 33
+    }
+  },
+  "slice_summary": {
+    "Q1_delta": -0.008968609865470767,
+    "Q2_delta": -0.008928571428571397,
+    "Q3_delta": -0.013513513513513487,
+    "Q4_delta": -0.013513513513513598,
+    "Q1_base": 0.8699551569506726,
+    "Q2_base": 0.8125,
+    "Q3_base": 0.8288288288288288,
+    "Q4_base": 0.8648648648648649,
+    "Q1_var": 0.8609865470852018,
+    "Q2_var": 0.8035714285714286,
+    "Q3_var": 0.8153153153153153,
+    "Q4_var": 0.8513513513513513
+  },
+  "gates": {
+    "G1_mean_random_gt_0_8440": {
+      "value": 0.8327725817588348,
+      "threshold": 0.844,
+      "passed": false
+    },
+    "G2_mean_group_gt_0_7991": {
+      "value": 0.7979703076863608,
+      "threshold": 0.7991,
+      "passed": false
+    },
+    "G3_delta_random_ge_0_0045_and_ge4wins": {
+      "delta": -0.011204569706861123,
+      "wins": 0,
+      "threshold_delta": 0.0045,
+      "threshold_wins": 4,
+      "passed": false
+    },
+    "G4_delta_group_ge_0_002_and_ge3wins": {
+      "delta": -0.0011108285838610232,
+      "wins": 3,
+      "threshold_delta": 0.002,
+      "threshold_wins": 3,
+      "passed": false
+    },
+    "G5_Q2_ge_0_02_and_Q1Q4_no_worse_than_minus_0_01": {
+      "Q2_delta": -0.008928571428571397,
+      "Q1_delta": -0.008968609865470767,
+      "Q4_delta": -0.013513513513513598,
+      "passed": false
+    }
+  },
+  "verdict": "REJECT",
+  "rationale": "G1 random mean 0.832773 <=0.8440 FAIL (base 0.843977, delta -0.011205). G2 group mean 0.797970 <=0.7991 FAIL (base 0.799081, delta -0.001111). G3 delta_random -0.011205 FAIL(<+0.0045) with 0/5 wins FAIL(<4) => FAIL. G4 delta_group -0.001111 FAIL(<+0.002) with 3/5 wins PASS => FAIL. G5 Q2 delta -0.0089 FAIL(<+0.02); Q1 -0.0090 PASS; Q4 -0.0135 FAIL(<-0.01) => FAIL. Overall REJECT: all five gates must pass; at least one failed, so REJECT (retain raw Fare).",
+  "falsifier_check": "Falsifier triggered=True: Q2 base 0.8125 -> var 0.8036 (delta -0.0089); random delta -0.011205; group delta -0.001111. Q2 stays ~0.81 and/or CV flat/down confirms falsifier.",
+  "files_written": [
+    "reports/gap4_r3a.json",
+    "reports/figures/5x_r3a.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_tuning_against_public_scores": true
+  }
+}

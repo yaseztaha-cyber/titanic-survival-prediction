@@ -1,0 +1,230 @@
+{
+  "worker": "R5A",
+  "task": "forest-seed variance: RF random_state in {42,0,1,7,123}, everything else frozen",
+  "reference": {
+    "tuned_RF_random_mean": 0.843977151465696,
+    "tuned_RF_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_RF_group_mean": 0.7990811362702218,
+    "tuned_RF_group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "rf_params_frozen": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "n_jobs": -1
+    },
+    "split_seed_range_reference": 0.013420375368778048,
+    "split_seed_range_note": "from reports/gap_stability.json seeds {42,123,2024,7,99}: max mean 0.843977 - min mean 0.830557 = 0.01342; CV splits varied, forest seed fixed at 42",
+    "candidate_deltas_context": "+0.002 to +0.003 sit inside 0.0134 split-seed range"
+  },
+  "protocol": {
+    "forest_seeds": [
+      42,
+      0,
+      1,
+      7,
+      123
+    ],
+    "splitters_frozen": "random: src.models.make_cv() = StratifiedKFold(n_splits=5, shuffle=True, random_state=42); group: StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42)",
+    "sgkf_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "sgkf_construction": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on sklearn 1.9.0",
+    "groups": "X['Ticket'].astype(str).str.strip() (681 ticket groups)",
+    "pipeline": "src.preprocessing.build_full_pipeline (production features: 10 numeric + 6 categorical)",
+    "scoring": "accuracy",
+    "std_convention": "population ddof=0",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden never used/inferred",
+    "total_fits": 50,
+    "fits_per_seed": "5 random-CV + 5 group-CV",
+    "sklearn": "1.9.0",
+    "elapsed_s": 168.5
+  },
+  "per_seed": [
+    {
+      "forest_seed": 42,
+      "random": {
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8202247191011236,
+          0.848314606741573,
+          0.8539325842696629
+        ],
+        "mean": 0.843977151465696,
+        "std_pop": 0.01412286875015432
+      },
+      "group": {
+        "folds": [
+          0.8100558659217877,
+          0.8156424581005587,
+          0.807909604519774,
+          0.7808988764044944,
+          0.7808988764044944
+        ],
+        "mean": 0.7990811362702218,
+        "std_pop": 0.015058904813936414
+      }
+    },
+    {
+      "forest_seed": 0,
+      "random": {
+        "folds": [
+          0.8547486033519553,
+          0.8314606741573034,
+          0.8202247191011236,
+          0.848314606741573,
+          0.848314606741573
+        ],
+        "mean": 0.8406126420187056,
+        "std_pop": 0.012789775921642441
+      },
+      "group": {
+        "folds": [
+          0.8100558659217877,
+          0.8044692737430168,
+          0.8192090395480226,
+          0.7696629213483146,
+          0.7865168539325843
+        ],
+        "mean": 0.7979827908987451,
+        "std_pop": 0.017730594766038582
+      }
+    },
+    {
+      "forest_seed": 1,
+      "random": {
+        "folds": [
+          0.8715083798882681,
+          0.8314606741573034,
+          0.8314606741573034,
+          0.848314606741573,
+          0.848314606741573
+        ],
+        "mean": 0.8462117883372041,
+        "std_pop": 0.014723803677595024
+      },
+      "group": {
+        "folds": [
+          0.8156424581005587,
+          0.8100558659217877,
+          0.8305084745762712,
+          0.7640449438202247,
+          0.7865168539325843
+        ],
+        "mean": 0.8013537192702852,
+        "std_pop": 0.02341782427676853
+      }
+    },
+    {
+      "forest_seed": 7,
+      "random": {
+        "folds": [
+          0.8659217877094972,
+          0.8370786516853933,
+          0.8202247191011236,
+          0.848314606741573,
+          0.848314606741573
+        ],
+        "mean": 0.8439708743958321,
+        "std_pop": 0.015039689104882544
+      },
+      "group": {
+        "folds": [
+          0.8156424581005587,
+          0.8100558659217877,
+          0.8135593220338984,
+          0.7584269662921348,
+          0.7865168539325843
+        ],
+        "mean": 0.7968402932561928,
+        "std_pop": 0.021862551428869986
+      }
+    },
+    {
+      "forest_seed": 123,
+      "random": {
+        "folds": [
+          0.8659217877094972,
+          0.8370786516853933,
+          0.8146067415730337,
+          0.848314606741573,
+          0.848314606741573
+        ],
+        "mean": 0.8428472788902139,
+        "std_pop": 0.016870218212642788
+      },
+      "group": {
+        "folds": [
+          0.8156424581005587,
+          0.8212290502793296,
+          0.8192090395480226,
+          0.7752808988764045,
+          0.7865168539325843
+        ],
+        "mean": 0.8035756601473798,
+        "std_pop": 0.0189380502287513
+      }
+    }
+  ],
+  "forest_seed_ranges": {
+    "random_mean_range": 0.00559914631849856,
+    "group_mean_range": 0.0067353668911870335,
+    "random_means": [
+      0.843977151465696,
+      0.8406126420187056,
+      0.8462117883372041,
+      0.8439708743958321,
+      0.8428472788902139
+    ],
+    "group_means": [
+      0.7990811362702218,
+      0.7979827908987451,
+      0.8013537192702852,
+      0.7968402932561928,
+      0.8035756601473798
+    ],
+    "random_std_of_seed_means_pop": 0.0018200662550449365,
+    "group_std_of_seed_means_pop": 0.002418387615992035,
+    "random_min": 0.8406126420187056,
+    "random_max": 0.8462117883372041,
+    "group_min": 0.7968402932561928,
+    "group_max": 0.8035756601473798
+  },
+  "variance_decomposition": {
+    "estimator_noise_random": 0.00559914631849856,
+    "estimator_noise_group": 0.0067353668911870335,
+    "split_noise_reference": 0.013420375368778048,
+    "ratio_estimator_to_split_random": 0.41721234798877116,
+    "ratio_estimator_to_split_group": 0.5018761924391912,
+    "within_fold_std_typical_random": 0.014709271133383422,
+    "within_fold_std_typical_group": 0.019401585102872966,
+    "statement": "Under FIXED splits, varying only forest random_state over [42, 0, 1, 7, 123] moves the CV mean by 0.0056 (random-CV) and 0.0067 (group-CV). Against the fixed-forest split-seed range 0.0134, estimator noise is 0.42x (random) and 0.50x (group) the split noise. Typical within-CV fold std (pop) is ~0.0147 random / ~0.0194 group, an order of magnitude larger than either seed-mean range. Total uncertainty around 0.8440 is therefore dominated by fold/split variation, with forest randomness a second-order contributor that nevertheless meaningfully widens the band: candidate deltas +0.002-0.003 sit inside BOTH the split range (0.0134) and, comparably, the estimator range."
+  },
+  "verdict": "ESTIMATOR NOISE MEANINGFULLY WIDENS UNCERTAINTY (DESCRIPTIVE, NO ADOPTION)",
+  "rationale": "Forest-seed range random 0.0056 (0.42x split range 0.0134) is on the scale of candidate deltas +0.002-0.003; group 0.0067 (0.50x). Both are smaller than split noise but same order as the effects under test, so the 0.8440 point estimate carries at least +-~0.0067 seed-driven ambiguity before fold noise; no seed selected.",
+  "seed_selection_note": "Seeds are not hyperparameters: no forest seed is recommended as 'better'; all deltas vs seed-42 are descriptive noise characterization only.",
+  "files_written": [
+    "reports/gap6_r5a.json",
+    "reports/figures/7x_r5a.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_tuning_against_public_scores": true,
+    "no_seed_recommendation": true
+  }
+}

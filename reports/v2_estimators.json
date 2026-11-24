@@ -1,0 +1,756 @@
+{
+  "worker": "V2 Worker B (wider estimator search)",
+  "created_utc": "2026-09-14T02:14:38.223626+00:00",
+  "install": {
+    "xgboost_import": true,
+    "xgboost_version": "3.4.1",
+    "lightgbm_import": true,
+    "lightgbm_version": "4.7.0",
+    "pip_command": "pip install xgboost lightgbm --quiet"
+  },
+  "reference": {
+    "rf_random_mean": 0.843977151465696,
+    "rf_group_mean": 0.7990811362702218,
+    "rf_brier": null,
+    "rf_brier_note": "RF Brier not provided in assignment; Brier gate unverifiable from reference alone.",
+    "known_context_NOT_gates": {
+      "GB_random": 0.8429,
+      "HGB_random": 0.8417,
+      "LR_random": 0.8283,
+      "LR_group_best": 0.8238
+    }
+  },
+  "splitters": {
+    "random": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    "group": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.astype(str).str.strip()",
+    "StratifiedGroupKFold_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "n_groups_ticket_stripped": 681,
+    "note": "Signature verified at runtime; shuffle+random_state supported."
+  },
+  "features": {
+    "numeric": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "IsAlone",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "pipeline": "src.preprocessing.build_full_pipeline",
+    "scale_rule": "scale_numeric=True ONLY for scale-sensitive models (SVM, KNN); False for XGB/LGBM"
+  },
+  "data": {
+    "train_rows": 891,
+    "target": "Survived",
+    "target_mean": 0.3838383838383838,
+    "test_labels": "never used/inferred (hidden)"
+  },
+  "candidates": [
+    {
+      "id": "XGB_ne300_d3_lr0.05_ss0.8",
+      "estimator": "XGB",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "eval_metric": "logloss",
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.841723683384596,
+        "std": 0.02610282351123121,
+        "folds": [
+          0.8659217877094972,
+          0.8595505617977528,
+          0.797752808988764,
+          0.8595505617977528,
+          0.8258426966292135
+        ]
+      },
+      "group_cv": {
+        "mean": 0.8058607263598278,
+        "std": 0.023796621309551517,
+        "folds": [
+          0.8268156424581006,
+          0.7932960893854749,
+          0.8361581920903954,
+          0.7696629213483146,
+          0.8033707865168539
+        ]
+      },
+      "oof_brier_random": 0.1202510194780158,
+      "oof_brier_group": 0.14017326920024853,
+      "oof_acc_random": 0.8417508417508418,
+      "oof_acc_group": 0.8058361391694725,
+      "fold_brier_random": [
+        0.10792117565870285,
+        0.11059785634279251,
+        0.14048731327056885,
+        0.11968918144702911,
+        0.12262887507677078
+      ],
+      "fold_brier_group": [
+        0.11850231140851974,
+        0.1487576961517334,
+        0.12882080674171448,
+        0.1681833118200302,
+        0.1366119533777237
+      ],
+      "fit_time_s": 26.68,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8417 <=0.8440 FAIL; group 0.8059 >=0.784081 PASS; brier R=0.1203 G=0.1402 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "XGB_ne500_d3_lr0.05_ss0.8",
+      "estimator": "XGB",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 3,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "eval_metric": "logloss",
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.8338773460548616,
+        "std": 0.01846299561080539,
+        "folds": [
+          0.8491620111731844,
+          0.8426966292134831,
+          0.797752808988764,
+          0.8370786516853933,
+          0.8426966292134831
+        ]
+      },
+      "group_cv": {
+        "mean": 0.795779681231242,
+        "std": 0.026360182963485645,
+        "folds": [
+          0.8212290502793296,
+          0.7653631284916201,
+          0.8305084745762712,
+          0.7696629213483146,
+          0.7921348314606742
+        ]
+      },
+      "oof_brier_random": 0.12301909060128034,
+      "oof_brier_group": 0.1457279662161041,
+      "oof_acc_random": 0.8338945005611672,
+      "oof_acc_group": 0.7957351290684624,
+      "fold_brier_random": [
+        0.10853889584541321,
+        0.11346929520368576,
+        0.14509177207946777,
+        0.12331505864858627,
+        0.12476177513599396
+      ],
+      "fold_brier_group": [
+        0.12443819642066956,
+        0.15599370002746582,
+        0.12947243452072144,
+        0.1720845103263855,
+        0.14662156999111176
+      ],
+      "fit_time_s": 42.91,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8339 <=0.8440 FAIL; group 0.7958 >=0.784081 PASS; brier R=0.1230 G=0.1457 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "XGB_ne300_d5_lr0.05_ss0.8",
+      "estimator": "XGB",
+      "params": {
+        "n_estimators": 300,
+        "max_depth": 5,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "eval_metric": "logloss",
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.8406126420187057,
+        "std": 0.015470177107600286,
+        "folds": [
+          0.8547486033519553,
+          0.8595505617977528,
+          0.8202247191011236,
+          0.8258426966292135,
+          0.8426966292134831
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7923899216501104,
+        "std": 0.020783854848269456,
+        "folds": [
+          0.8156424581005587,
+          0.776536312849162,
+          0.8192090395480226,
+          0.7696629213483146,
+          0.7808988764044944
+        ]
+      },
+      "oof_brier_random": 0.12462926236910908,
+      "oof_brier_group": 0.1523753425429173,
+      "oof_acc_random": 0.8406285072951739,
+      "oof_acc_group": 0.792368125701459,
+      "fold_brier_random": [
+        0.103751540184021,
+        0.12054191529750824,
+        0.14815105497837067,
+        0.12899908423423767,
+        0.12181998044252396
+      ],
+      "fold_brier_group": [
+        0.12846307456493378,
+        0.15498729050159454,
+        0.1352624148130417,
+        0.17809243500232697,
+        0.1650950014591217
+      ],
+      "fit_time_s": 31.88,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8406 <=0.8440 FAIL; group 0.7924 >=0.784081 PASS; brier R=0.1246 G=0.1524 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "XGB_ne500_d5_lr0.05_ss0.8",
+      "estimator": "XGB",
+      "params": {
+        "n_estimators": 500,
+        "max_depth": 5,
+        "learning_rate": 0.05,
+        "subsample": 0.8,
+        "eval_metric": "logloss",
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.8293704098926622,
+        "std": 0.024709393509347036,
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.797752808988764,
+          0.8033707865168539,
+          0.848314606741573
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7867656670521568,
+        "std": 0.026510981275329224,
+        "folds": [
+          0.8156424581005587,
+          0.7821229050279329,
+          0.8192090395480226,
+          0.7584269662921348,
+          0.7584269662921348
+        ]
+      },
+      "oof_brier_random": 0.13073981102262505,
+      "oof_brier_group": 0.159814921683918,
+      "oof_acc_random": 0.8294051627384961,
+      "oof_acc_group": 0.7867564534231201,
+      "fold_brier_random": [
+        0.10460560768842697,
+        0.12909379601478577,
+        0.15669389069080353,
+        0.13925206661224365,
+        0.12420052289962769
+      ],
+      "fold_brier_group": [
+        0.13627251982688904,
+        0.16537894308567047,
+        0.13954122364521027,
+        0.18075640499591827,
+        0.1771126389503479
+      ],
+      "fit_time_s": 46.94,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8294 <=0.8440 FAIL; group 0.7868 >=0.784081 PASS; brier R=0.1307 G=0.1598 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "LGBM_ne300_leaves15_lr0.05",
+      "estimator": "LGBM",
+      "params": {
+        "n_estimators": 300,
+        "num_leaves": 15,
+        "learning_rate": 0.05,
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.8316238779737619,
+        "std": 0.023458522861319272,
+        "folds": [
+          0.8547486033519553,
+          0.8370786516853933,
+          0.7921348314606742,
+          0.8202247191011236,
+          0.8539325842696629
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7958051441474125,
+        "std": 0.03587136660592954,
+        "folds": [
+          0.8100558659217877,
+          0.7821229050279329,
+          0.8587570621468926,
+          0.7696629213483146,
+          0.7584269662921348
+        ]
+      },
+      "oof_brier_random": 0.12935643142626088,
+      "oof_brier_group": 0.15326803284251858,
+      "oof_acc_random": 0.8316498316498316,
+      "oof_acc_group": 0.7957351290684624,
+      "fold_brier_random": [
+        0.10781601145424305,
+        0.1279933253226482,
+        0.15587873653405335,
+        0.13186386094336955,
+        0.12335123647233873
+      ],
+      "fold_brier_group": [
+        0.13525095937207487,
+        0.166033347721759,
+        0.1258742072521959,
+        0.17417389811902848,
+        0.16488335811270813
+      ],
+      "fit_time_s": 31.09,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8316 <=0.8440 FAIL; group 0.7958 >=0.784081 PASS; brier R=0.1294 G=0.1533 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "LGBM_ne300_leaves31_lr0.05",
+      "estimator": "LGBM",
+      "params": {
+        "n_estimators": 300,
+        "num_leaves": 31,
+        "learning_rate": 0.05,
+        "random_state": 42
+      },
+      "scale_numeric": false,
+      "random_cv": {
+        "mean": 0.8136651810934655,
+        "std": 0.03277567686576744,
+        "folds": [
+          0.8379888268156425,
+          0.8146067415730337,
+          0.7584269662921348,
+          0.8033707865168539,
+          0.8539325842696629
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7912789512115632,
+        "std": 0.027141033726425103,
+        "folds": [
+          0.8100558659217877,
+          0.776536312849162,
+          0.8248587570621468,
+          0.797752808988764,
+          0.7471910112359551
+        ]
+      },
+      "oof_brier_random": 0.1406974084964446,
+      "oof_brier_group": 0.16494895032337362,
+      "oof_acc_random": 0.813692480359147,
+      "oof_acc_group": 0.7912457912457912,
+      "fold_brier_random": [
+        0.11457341127450116,
+        0.14043227299262856,
+        0.17203939446072408,
+        0.14921434512703896,
+        0.127374382656667
+      ],
+      "fold_brier_group": [
+        0.14202657947171832,
+        0.1709493919400909,
+        0.13686668979567995,
+        0.1818454355693425,
+        0.19299395634962763
+      ],
+      "fit_time_s": 48.9,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8137 <=0.8440 FAIL; group 0.7913 >=0.784081 PASS; brier R=0.1407 G=0.1649 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "SVC_RBF_C0.5",
+      "estimator": "SVC",
+      "params": {
+        "kernel": "rbf",
+        "C": 0.5,
+        "probability": true,
+        "random_state": 42
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.8282656455966355,
+        "std": 0.014656997111555145,
+        "folds": [
+          0.8435754189944135,
+          0.8146067415730337,
+          0.8146067415730337,
+          0.8202247191011236,
+          0.848314606741573
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7968466412533997,
+        "std": 0.027651050033484857,
+        "folds": [
+          0.8324022346368715,
+          0.7932960893854749,
+          0.8192090395480226,
+          0.7528089887640449,
+          0.7865168539325843
+        ]
+      },
+      "oof_brier_random": 0.13600760883886073,
+      "oof_brier_group": 0.14907132980977525,
+      "oof_acc_random": 0.8282828282828283,
+      "oof_acc_group": 0.7968574635241302,
+      "fold_brier_random": [
+        0.1323196651954576,
+        0.14224566374167005,
+        0.14497832243306374,
+        0.13885300020688696,
+        0.1216621114017388
+      ],
+      "fold_brier_group": [
+        0.13229190919561248,
+        0.16147313669140417,
+        0.13770982041941543,
+        0.17300316560787904,
+        0.14083938176570082
+      ],
+      "fit_time_s": 4.37,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8283 <=0.8440 FAIL; group 0.7968 >=0.784081 PASS; brier R=0.1360 G=0.1491 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "SVC_RBF_C1.0",
+      "estimator": "SVC",
+      "params": {
+        "kernel": "rbf",
+        "C": 1.0,
+        "probability": true,
+        "random_state": 42
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.8338836231247255,
+        "std": 0.013227953357353345,
+        "folds": [
+          0.8435754189944135,
+          0.8202247191011236,
+          0.8202247191011236,
+          0.8314606741573034,
+          0.8539325842696629
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7946183523790982,
+        "std": 0.031860843795366134,
+        "folds": [
+          0.8212290502793296,
+          0.7932960893854749,
+          0.8248587570621468,
+          0.7359550561797753,
+          0.797752808988764
+        ]
+      },
+      "oof_brier_random": 0.13309430837307218,
+      "oof_brier_group": 0.15067604998883075,
+      "oof_acc_random": 0.8338945005611672,
+      "oof_acc_group": 0.7946127946127947,
+      "fold_brier_random": [
+        0.1280792283697396,
+        0.13930013218774123,
+        0.1435846420697266,
+        0.13545546301364259,
+        0.11908025083127113
+      ],
+      "fold_brier_group": [
+        0.1333795262789782,
+        0.15973751697425537,
+        0.1398317687403044,
+        0.18083723150567801,
+        0.1395795478801957
+      ],
+      "fit_time_s": 4.12,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8339 <=0.8440 FAIL; group 0.7946 >=0.784081 PASS; brier R=0.1331 G=0.1507 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "SVC_RBF_C5.0",
+      "estimator": "SVC",
+      "params": {
+        "kernel": "rbf",
+        "C": 5.0,
+        "probability": true,
+        "random_state": 42
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.81814700897621,
+        "std": 0.024468501423546115,
+        "folds": [
+          0.8491620111731844,
+          0.8202247191011236,
+          0.7752808988764045,
+          0.8146067415730337,
+          0.8314606741573034
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7765898275295261,
+        "std": 0.029622304464473104,
+        "folds": [
+          0.8044692737430168,
+          0.7932960893854749,
+          0.7627118644067796,
+          0.7247191011235955,
+          0.797752808988764
+        ]
+      },
+      "oof_brier_random": 0.12960389237603306,
+      "oof_brier_group": 0.1545538247656172,
+      "oof_acc_random": 0.8181818181818182,
+      "oof_acc_group": 0.77665544332211,
+      "fold_brier_random": [
+        0.11527381306512702,
+        0.1310289051030657,
+        0.14787599457667525,
+        0.12780339209262317,
+        0.12611786310621864
+      ],
+      "fold_brier_group": [
+        0.1419995105664994,
+        0.15297362064092093,
+        0.1525036209099653,
+        0.19442651959153562,
+        0.1309337415262891
+      ],
+      "fit_time_s": 4.12,
+      "gate_random_pass": false,
+      "gate_group_pass": false,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8181 <=0.8440 FAIL; group 0.7766 <0.784081 FAIL; brier R=0.1296 G=0.1546 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "KNN_k5",
+      "estimator": "KNN",
+      "params": {
+        "n_neighbors": 5
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.8159186491745652,
+        "std": 0.02656074004705011,
+        "folds": [
+          0.8324022346368715,
+          0.8033707865168539,
+          0.7696629213483146,
+          0.8314606741573034,
+          0.8426966292134831
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7889747700801515,
+        "std": 0.043428009597584534,
+        "folds": [
+          0.7988826815642458,
+          0.7988826815642458,
+          0.7853107344632768,
+          0.7134831460674157,
+          0.848314606741573
+        ]
+      },
+      "oof_brier_random": 0.14303030303030304,
+      "oof_brier_group": 0.15398428731762068,
+      "oof_acc_random": 0.8159371492704826,
+      "oof_acc_group": 0.7890011223344556,
+      "fold_brier_random": [
+        0.1316201117318436,
+        0.15415730337078654,
+        0.16651685393258428,
+        0.13348314606741574,
+        0.12943820224719102
+      ],
+      "fold_brier_group": [
+        0.13854748603351955,
+        0.15731843575418997,
+        0.15593220338983052,
+        0.1914606741573034,
+        0.12674157303370787
+      ],
+      "fit_time_s": 6.46,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8159 <=0.8440 FAIL; group 0.7890 >=0.784081 PASS; brier R=0.1430 G=0.1540 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "KNN_k15",
+      "estimator": "KNN",
+      "params": {
+        "n_neighbors": 15
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.8058188437637313,
+        "std": 0.018827380189383704,
+        "folds": [
+          0.8212290502793296,
+          0.8202247191011236,
+          0.7752808988764045,
+          0.7921348314606742,
+          0.8202247191011236
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7912282381612512,
+        "std": 0.038177019618071566,
+        "folds": [
+          0.8324022346368715,
+          0.7597765363128491,
+          0.7853107344632768,
+          0.7415730337078652,
+          0.8370786516853933
+        ]
+      },
+      "oof_brier_random": 0.13684499314128942,
+      "oof_brier_group": 0.1451502681132311,
+      "oof_acc_random": 0.8058361391694725,
+      "oof_acc_group": 0.7912457912457912,
+      "fold_brier_random": [
+        0.13062693978895093,
+        0.13158551810237204,
+        0.14883895131086142,
+        0.1406741573033708,
+        0.13253433208489387
+      ],
+      "fold_brier_group": [
+        0.12722532588454377,
+        0.15798882681564247,
+        0.13848085373509103,
+        0.17358302122347066,
+        0.12846441947565543
+      ],
+      "fit_time_s": 2.33,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.8058 <=0.8440 FAIL; group 0.7912 >=0.784081 PASS; brier R=0.1368 G=0.1452 UNVERIFIABLE (no RF Brier ref)"
+    },
+    {
+      "id": "KNN_k31",
+      "estimator": "KNN",
+      "params": {
+        "n_neighbors": 31
+      },
+      "scale_numeric": true,
+      "random_cv": {
+        "mean": 0.7990961019396146,
+        "std": 0.004454482283012041,
+        "folds": [
+          0.8044692737430168,
+          0.8033707865168539,
+          0.797752808988764,
+          0.7921348314606742,
+          0.797752808988764
+        ]
+      },
+      "group_cv": {
+        "mean": 0.7957480121725506,
+        "std": 0.016672085133397192,
+        "folds": [
+          0.8156424581005587,
+          0.776536312849162,
+          0.807909604519774,
+          0.7752808988764045,
+          0.8033707865168539
+        ]
+      },
+      "oof_brier_random": 0.1439017297498047,
+      "oof_brier_group": 0.14929734388631372,
+      "oof_acc_random": 0.7991021324354658,
+      "oof_acc_group": 0.7957351290684624,
+      "fold_brier_random": [
+        0.1400310430824502,
+        0.1369477019490465,
+        0.1535911795999018,
+        0.15060388873949185,
+        0.13835658080884847
+      ],
+      "fold_brier_group": [
+        0.13383405321505182,
+        0.15911033083554724,
+        0.1428596624279088,
+        0.17165522805130426,
+        0.1390230214313274
+      ],
+      "fit_time_s": 2.09,
+      "gate_random_pass": false,
+      "gate_group_pass": true,
+      "gate_brier_pass": null,
+      "gate_reason": "random 0.7991 <=0.8440 FAIL; group 0.7957 >=0.784081 PASS; brier R=0.1439 G=0.1493 UNVERIFIABLE (no RF Brier ref)"
+    }
+  ],
+  "selection": {
+    "gate_random": "random mean > 0.8440",
+    "gate_group": "group mean >= RF_group - 0.015 = 0.784081",
+    "gate_brier": "Brier <= RF Brier + 0.002 (RF Brier NOT provided -> UNVERIFIABLE)",
+    "gate_random_threshold": 0.844,
+    "gate_group_threshold": 0.7840811362702218,
+    "n_pass_random_and_group": 0,
+    "pass_random_and_group_ids": [],
+    "shortlist_ranked_by_random_mean": [],
+    "shortlist": [],
+    "reasoning": "Pre-committed rule requires ALL THREE gates. RF Brier was not in provided reference, so Brier gate cannot be verified; additionally see per-candidate gate flags. Honestly reporting EMPTY shortlist; bar NOT lowered."
+  },
+  "files_written": [
+    "reports/v2_estimators.json",
+    "reports/figures/10x_est.png"
+  ],
+  "compliance": {
+    "touched_forbidden": "none (read-only except the two outputs)",
+    "test_inference": "none",
+    "board_scores_used_in_gate": "none (0.75358/0.76315/0.77511 never used)",
+    "external_downloads": "none; no C:/Users/DELL/Downloads, no D:/Downloads, no github raw, no Kaggle API, no web label search",
+    "seed": 42
+  }
+}

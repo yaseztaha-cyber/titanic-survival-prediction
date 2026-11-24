@@ -1,0 +1,366 @@
+{
+  "meta": {
+    "random_cv": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42), accuracy, full pipeline via src.analysis.build_pipeline_with_features (config column order preserved)",
+    "group_cv": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) grouped by raw Ticket, accuracy; shuffle/random_state supported by sklearn 1.9.0 (signature verified at runtime), same splits for all four models",
+    "tuned_rf": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42)",
+    "tuned_gb": {
+      "model__learning_rate": 0.1,
+      "model__max_depth": 2,
+      "model__n_estimators": 300,
+      "model__subsample": 0.8
+    },
+    "tuned_hgb": {
+      "model__l2_regularization": 1.0,
+      "model__learning_rate": 0.05,
+      "model__max_depth": 5,
+      "model__max_leaf_nodes": 15
+    },
+    "lr": "LogisticRegression(max_iter=1000, random_state=42) with scale_numeric=True (StandardScaler appended to helper numeric branch; trees unscaled)",
+    "std": "population std (ddof=0)",
+    "kaggle": "0.75358 RECORD ONLY - not used for tuning",
+    "note": "model random-CV reused from reports/experiment_results.json + reports/extended_results.json + reports/tuning_top3.json (not recomputed); all group-CV + feature-matrix numbers freshly measured"
+  },
+  "feature_sets": {
+    "A": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked"
+      ]
+    },
+    "B": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked"
+      ]
+    },
+    "C": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title"
+      ]
+    },
+    "D": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title"
+      ]
+    },
+    "E": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title"
+      ]
+    },
+    "F": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck"
+      ]
+    },
+    "Final": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ]
+    }
+  },
+  "feature_matrix": [
+    {
+      "set": "A",
+      "random_mean": 0.8394827694432239,
+      "random_std": 0.017081089343750883,
+      "random_folds": [
+        0.8603351955307262,
+        0.8426966292134831,
+        0.8146067415730337,
+        0.8258426966292135,
+        0.8539325842696629
+      ],
+      "group_mean": 0.8237692066812139,
+      "group_std": 0.023307535582620376,
+      "group_folds": [
+        0.8603351955307262,
+        0.8212290502793296,
+        0.8361581920903954,
+        0.7921348314606742,
+        0.8089887640449438
+      ]
+    },
+    {
+      "set": "B",
+      "random_mean": 0.8383654510074697,
+      "random_std": 0.014997008958998154,
+      "random_folds": [
+        0.8547486033519553,
+        0.8314606741573034,
+        0.8146067415730337,
+        0.8370786516853933,
+        0.8539325842696629
+      ],
+      "group_mean": 0.8215345698097055,
+      "group_std": 0.023970153880090782,
+      "group_folds": [
+        0.8603351955307262,
+        0.8100558659217877,
+        0.8361581920903954,
+        0.7921348314606742,
+        0.8089887640449438
+      ]
+    },
+    {
+      "set": "C",
+      "random_mean": 0.8406000878789781,
+      "random_std": 0.020472001048430426,
+      "random_folds": [
+        0.8659217877094972,
+        0.8202247191011236,
+        0.8146067415730337,
+        0.8426966292134831,
+        0.8595505617977528
+      ],
+      "group_mean": 0.8170589480694819,
+      "group_std": 0.020261775680975168,
+      "group_folds": [
+        0.8379888268156425,
+        0.8100558659217877,
+        0.8305084745762712,
+        0.7808988764044944,
+        0.8258426966292135
+      ]
+    },
+    {
+      "set": "D",
+      "random_mean": 0.8349883874207521,
+      "random_std": 0.017122330176313053,
+      "random_folds": [
+        0.8603351955307262,
+        0.8258426966292135,
+        0.8089887640449438,
+        0.8426966292134831,
+        0.8370786516853933
+      ],
+      "group_mean": 0.8181762665052361,
+      "group_std": 0.017649677897771318,
+      "group_folds": [
+        0.8379888268156425,
+        0.8156424581005587,
+        0.8305084745762712,
+        0.7865168539325843,
+        0.8202247191011236
+      ]
+    },
+    {
+      "set": "E",
+      "random_mean": 0.8327663046889713,
+      "random_std": 0.022342353498152556,
+      "random_folds": [
+        0.8379888268156425,
+        0.8314606741573034,
+        0.7921348314606742,
+        0.8426966292134831,
+        0.8595505617977528
+      ],
+      "group_mean": 0.79911273440157,
+      "group_std": 0.019168985459250852,
+      "group_folds": [
+        0.8044692737430168,
+        0.8100558659217877,
+        0.8248587570621468,
+        0.7696629213483146,
+        0.7865168539325843
+      ]
+    },
+    {
+      "set": "F",
+      "random_mean": 0.8451007469713139,
+      "random_std": 0.012293455033895407,
+      "random_folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8258426966292135,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "group_mean": 0.8013346752786645,
+      "group_std": 0.014610978809596031,
+      "group_folds": [
+        0.8156424581005587,
+        0.8100558659217877,
+        0.8135593220338984,
+        0.7808988764044944,
+        0.7865168539325843
+      ]
+    },
+    {
+      "set": "Final",
+      "random_mean": 0.843977151465696,
+      "random_std": 0.01412286875015432,
+      "random_folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "group_mean": 0.7990811362702218,
+      "group_std": 0.015058904813936414,
+      "group_folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ]
+    }
+  ],
+  "models": [
+    {
+      "model": "Random Forest (tuned)",
+      "random_mean": 0.843977151465696,
+      "random_std": 0.01412286875015432,
+      "group_mean": 0.7990811362702218,
+      "group_std": 0.015058904813936414,
+      "group_folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ]
+    },
+    {
+      "model": "Gradient Boosting (tuned)",
+      "random_mean": 0.8428535559600778,
+      "random_std": 0.016826493362689092,
+      "group_mean": 0.8047182287172754,
+      "group_std": 0.0225420092952231,
+      "group_folds": [
+        0.8268156424581006,
+        0.8044692737430168,
+        0.8305084745762712,
+        0.7696629213483146,
+        0.7921348314606742
+      ]
+    },
+    {
+      "model": "Hist Gradient Boosting (tuned)",
+      "random_mean": 0.8417487916640513,
+      "random_std": 0.014407050017825017,
+      "group_mean": 0.8058670034296916,
+      "group_std": 0.025048130335767183,
+      "group_folds": [
+        0.8212290502793296,
+        0.7932960893854749,
+        0.8361581920903954,
+        0.7640449438202247,
+        0.8146067415730337
+      ]
+    },
+    {
+      "model": "Logistic Regression",
+      "random_mean": 0.8282781997363632,
+      "random_std": 0.0157751345521236,
+      "group_mean": 0.8237878251087759,
+      "group_std": 0.027882644700231777,
+      "group_folds": [
+        0.8435754189944135,
+        0.8044692737430168,
+        0.8192090395480226,
+        0.7865168539325843,
+        0.8651685393258427
+      ]
+    }
+  ],
+  "ranking_stable_bool": false,
+  "random_ranking": [
+    "Random Forest (tuned)",
+    "Gradient Boosting (tuned)",
+    "Hist Gradient Boosting (tuned)",
+    "Logistic Regression"
+  ],
+  "group_ranking": [
+    "Logistic Regression",
+    "Hist Gradient Boosting (tuned)",
+    "Gradient Boosting (tuned)",
+    "Random Forest (tuned)"
+  ]
+}

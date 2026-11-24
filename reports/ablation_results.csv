@@ -1,0 +1,8 @@
+id,label,n_numeric,n_categorical,cv_mean,cv_std,delta_vs_baseline,group_added,features_added_numeric,features_added_categorical,delta_vs_previous
+A,A - Raw baseline,4,3,0.8395,0.0171,0.0,"Raw baseline (Age, Fare, SibSp, Parch, Pclass, Sex, Embarked; no engineered features)","['Age', 'Fare', 'SibSp', 'Parch']","['Pclass', 'Sex', 'Embarked']",
+B,B - + Family,6,4,0.8372,0.014,-0.0022,"Family (FamilySize, IsAlone, FamilySizeCategory)","['FamilySize', 'IsAlone']",['FamilySizeCategory'],-0.0022
+C,C - + Title,6,5,0.8384,0.0181,-0.0011,Title (Title extracted from Name),[],['Title'],0.0011
+D,D - + Ticket groups,7,5,0.8395,0.0182,0.0,Ticket groups (TicketGroupSize),['TicketGroupSize'],[],0.0011
+E,E - + Fare per person,8,5,0.8339,0.0227,-0.0056,Fare per person (FarePerPerson),['FarePerPerson'],[],-0.0056
+F,F - + Cabin,9,6,0.844,0.0141,0.0045,"Cabin (CabinDeck, CabinKnown)",['CabinKnown'],['CabinDeck'],0.0101
+G,G - Final (+ Mother),10,6,0.844,0.0141,0.0045,Final (Mother),['Mother'],[],0.0

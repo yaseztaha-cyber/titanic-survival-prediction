@@ -1,0 +1,320 @@
+{
+  "worker": "R3B Cabin Known-only",
+  "variant": "Cabin Known-only: numeric unchanged (all 10 incl CabinKnown); categorical 6->5 REMOVE CabinDeck (keep Pclass,Sex,Embarked,Title,FamilySizeCategory). Config column-drop only via build_pipeline_with_features — no fitted state, trivially fold-safe and target-free.",
+  "reference": {
+    "tuned_RF": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1)",
+    "random_mean": 0.843977151465696,
+    "random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "group_mean": 0.7990811362702218,
+    "group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "rf_params": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "numeric_base": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "IsAlone",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical_base": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "numeric_variant": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "IsAlone",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical_variant": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "FamilySizeCategory"
+    ]
+  },
+  "evidence_context": {
+    "known_cabin_oof_base_reproduced": "0.8137254901960784 (n=204)",
+    "unknown_cabin_oof_base_reproduced": "0.8529839883551674 (n=687)",
+    "priors_cited": "66.67% vs 30.0% (known vs unknown) — overfit signal despite higher prior",
+    "robustness_E_to_F": "random +0.0123 but group only +0.0022 → random-optimistic deck memorization",
+    "impurity": "Deck_F/T/G/A/B ~ noise (0.0001-0.003) vs CabinKnown 0.0108",
+    "prior_AGTF_merge": "rejected (+0.0011/-0.0022)"
+  },
+  "protocol": {
+    "base_builder": "src.analysis.build_pipeline_with_features (preserves config column order)",
+    "variant_builder": "same builder, categorical minus CabinDeck; numeric unchanged",
+    "fold_safe": "config column-drop only — no fitted state, target-free",
+    "random_splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.strip()",
+    "group_splitter_signatures_verified": {
+      "StratifiedKFold": "(n_splits=5, *, shuffle=False, random_state=None)",
+      "StratifiedGroupKFold": "(n_splits=5, shuffle=False, random_state=None)",
+      "sklearn": "1.9.0",
+      "shuffle_random_state_supported": true
+    },
+    "groups": "X['Ticket'].astype(str).str.strip() (n_groups=681)",
+    "scoring": "accuracy",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden — never used/inferred",
+    "std_convention": "population std (ddof=0)",
+    "oof_slices": "cross_val_predict labels on both pipes under random CV; slices CabinKnown 0/1 (Cabin.notna()) and Pclass 1/2/3"
+  },
+  "results": {
+    "base_random": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262
+    },
+    "variant_random": {
+      "folds": [
+        0.8547486033519553,
+        0.848314606741573,
+        0.8033707865168539,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.8417362375243236,
+      "std": 0.0193728173092513,
+      "min": 0.8033707865168539,
+      "max": 0.8547486033519553
+    },
+    "base_group": {
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ],
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "min": 0.7808988764044944,
+      "max": 0.8156424581005587
+    },
+    "variant_group": {
+      "folds": [
+        0.8156424581005587,
+        0.8100558659217877,
+        0.8361581920903954,
+        0.7752808988764045,
+        0.7752808988764045
+      ],
+      "mean": 0.8024836627731101,
+      "std": 0.023851401665206405,
+      "min": 0.7752808988764045,
+      "max": 0.8361581920903954
+    },
+    "delta_random": -0.00224091394137238,
+    "delta_group": 0.0034025265028883034,
+    "fold_wins_random": {
+      "wins": 1,
+      "ties": 2,
+      "losses": 2,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8603351955307262,
+          "variant": 0.8547486033519553,
+          "delta": -0.005586592178770888
+        },
+        {
+          "fold": 1,
+          "base": 0.8370786516853933,
+          "variant": 0.848314606741573,
+          "delta": 0.011235955056179692
+        },
+        {
+          "fold": 2,
+          "base": 0.8202247191011236,
+          "variant": 0.8033707865168539,
+          "delta": -0.016853932584269704
+        },
+        {
+          "fold": 3,
+          "base": 0.848314606741573,
+          "variant": 0.848314606741573,
+          "delta": 0.0
+        },
+        {
+          "fold": 4,
+          "base": 0.8539325842696629,
+          "variant": 0.8539325842696629,
+          "delta": 0.0
+        }
+      ]
+    },
+    "fold_wins_group": {
+      "wins": 2,
+      "ties": 0,
+      "losses": 3,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8100558659217877,
+          "variant": 0.8156424581005587,
+          "delta": 0.005586592178770999
+        },
+        {
+          "fold": 1,
+          "base": 0.8156424581005587,
+          "variant": 0.8100558659217877,
+          "delta": -0.005586592178770999
+        },
+        {
+          "fold": 2,
+          "base": 0.807909604519774,
+          "variant": 0.8361581920903954,
+          "delta": 0.02824858757062143
+        },
+        {
+          "fold": 3,
+          "base": 0.7808988764044944,
+          "variant": 0.7752808988764045,
+          "delta": -0.005617977528089901
+        },
+        {
+          "fold": 4,
+          "base": 0.7808988764044944,
+          "variant": 0.7752808988764045,
+          "delta": -0.005617977528089901
+        }
+      ]
+    }
+  },
+  "slices_oof_random": {
+    "CabinKnown_0": {
+      "n": 687,
+      "base_acc": 0.8529839883551674,
+      "var_acc": 0.8558951965065502,
+      "delta": 0.0029112081513827937
+    },
+    "CabinKnown_1": {
+      "n": 204,
+      "base_acc": 0.8137254901960784,
+      "var_acc": 0.7941176470588235,
+      "delta": -0.019607843137254943
+    },
+    "Pclass_1": {
+      "n": 216,
+      "base_acc": 0.8287037037037037,
+      "var_acc": 0.8148148148148148,
+      "delta": -0.01388888888888895
+    },
+    "Pclass_2": {
+      "n": 184,
+      "base_acc": 0.9130434782608695,
+      "var_acc": 0.9130434782608695,
+      "delta": 0.0
+    },
+    "Pclass_3": {
+      "n": 491,
+      "base_acc": 0.824847250509165,
+      "var_acc": 0.8268839103869654,
+      "delta": 0.0020366598778004397
+    }
+  },
+  "slice_summary": {
+    "known_delta": -0.019607843137254943,
+    "unknown_delta": 0.0029112081513827937,
+    "pclass1_delta": -0.01388888888888895,
+    "pclass2_delta": 0.0,
+    "pclass3_delta": 0.0020366598778004397
+  },
+  "gates": {
+    "G1_mean_random_gt_0_8440": {
+      "value": 0.8417362375243236,
+      "threshold": 0.844,
+      "passed": false,
+      "reason": "0.84174 <= 0.8440; also below base 0.84398 by -0.00224"
+    },
+    "G2_mean_group_gt_0_7991": {
+      "value": 0.8024836627731101,
+      "threshold": 0.7991,
+      "passed": true,
+      "reason": "0.80248 > 0.7991 but with higher variance (std 0.02385 vs 0.01506) and only 2/5 wins"
+    },
+    "G3_delta_random_ge_0_0045_and_ge4wins": {
+      "delta": -0.00224091394137238,
+      "wins": 1,
+      "required_delta": 0.0045,
+      "required_wins": 4,
+      "passed": false,
+      "reason": "delta -0.00224 < +0.0045 and 1 win < 4; fold2 drops -0.01685"
+    },
+    "G4_delta_group_ge_0_002_and_ge3wins": {
+      "delta": 0.0034025265028883034,
+      "wins": 2,
+      "required_delta": 0.002,
+      "required_wins": 3,
+      "passed": false,
+      "reason": "delta +0.00340 passes magnitude but 2 wins < 3; driven by single fold2 +0.02825 while folds 3,4 both -0.00562"
+    },
+    "G5_known_rises_and_pclass1_regress_le_0_01": {
+      "known_delta": -0.019607843137254943,
+      "pclass1_delta": -0.01388888888888895,
+      "required_known": ">0",
+      "required_pclass1": ">=-0.01",
+      "passed": false,
+      "reason": "known-cabin falls -0.01961 (0.81373->0.79412) not rises; Pclass-1 regresses -0.01389 exceeding 0.01 budget"
+    }
+  },
+  "verdict": "REJECT",
+  "rationale": "ADOPT required ALL gates; 4/5 fail (only G2 passes). Removing CabinDeck hurts random CV and the very subgroup it was meant to help: known-cabin OOF drops 0.8137->0.7941 (-0.0196) and Pclass-1 drops 0.8287->0.8148 (-0.0139). Group mean +0.0034 is fold2-concentrated (+0.02825) with 2/5 wins and inflated std, not robust.",
+  "falsifier_check": "Falsifier predicted random drops toward ~0.833 or group flat/down if deck carried real signal. Observed: random 0.84398->0.84174 (down, direction toward 0.833, fold2 -0.01685); group +0.0034 but 2W/3L with higher variance; known-cabin slice collapses. Deck carried real signal for known/Pclass-1 — falsifier fires toward REJECT.",
+  "files_written": [
+    "reports/gap4_r3b.json",
+    "reports/figures/5x_r3b.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_configs_edits": true,
+    "no_tuning_against_public_scores": true,
+    "method": "build_pipeline_with_features column-drop only; no fitted state; target-free"
+  }
+}

@@ -1,0 +1,361 @@
+{
+  "worker": "R7_confirmatory_robustness",
+  "precommitted_bar_upfront": "Outcome can ONLY be 'plateau confirmed' UNLESS a challenger beats RF by >=+0.013 (full seed range) AND paired-t >=2.0 on BOTH new groupings G2 surname and G3 famticket. Stated upfront as near-impossible. Any smaller edge = confirmatory evidence of plateau, explicitly not promotion. Brier reported, never decisive alone. Accuracy@0.5 fixed; no threshold games.",
+  "protocol": {
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden \u2014 never used/inferred",
+    "groupings": {
+      "G2_surname": "key = extract_surname via from src.feature_engineering import extract_surname (text before comma); n_groups=667",
+      "G3_famticket": "Surname + '__' + Ticket DOUBLE underscore to match W3 partitions; Surname from extract_surname + stripped Ticket; n_groups=739"
+    },
+    "splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) per grouping; identical precomputed fold indices reused for all 4 estimators (fair paired folds)",
+    "estimators_verbatim": {
+      "RF_reference": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) via src.preprocessing.build_full_pipeline production features scale_numeric=False",
+      "vote_E14_RF_GB_HGB": "VotingClassifier(voting=soft, estimators=[tuned-RF pipe, GB(lr=0.1,max_depth=2,n_est=300,subsample=0.8,rs=42) pipe, HGB(l2=1.0,lr=0.05,max_depth=5,max_leaf_nodes=15,rs=42) pipe]) each via build_full_pipeline scale_numeric=False; exact member specs in reports/gap2_e2.json rebuilt verbatim",
+      "calibrated_E13_sigmoid_cv5": "Pipeline([TitanicFeatureEngineer, build_preprocessor(scale_numeric=False), CalibratedClassifierCV(estimator=RF(n_estimators=500,max_depth=12,min_samples_split=5,min_samples_leaf=1,max_features=None,random_state=42,n_jobs=-1), method=sigmoid, cv=5, ensemble=True default)]) calibration INSIDE pipeline; reproduces gap2_e1 random 0.84623/ticket 0.80696 exactly (outside-wrapper gives 0.84735 mismatch per gap3_r2b note)",
+      "R2_regularized_RF_d12_l4": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=4, max_features=None, random_state=42, n_jobs=-1) via build_full_pipeline; spec in gap4_r3c.json variants.R2"
+    },
+    "scoring": "accuracy at fixed 0.5 threshold; OOF Brier via brier_score_loss on cross_val predict_proba OOF (single fit per fold yields both)",
+    "std_convention": "population ddof=0 primary (std_sample ddof=1 also recorded); paired-t uses sample std ddof=1: t=mean(diff)/(sd(ddof=1)/sqrt(5)) on same 5 folds challenger-RF",
+    "fits": "4 estimators x 2 groupings x 5 folds = 40 fits (manual loop, one fit per fold for acc+Brier)",
+    "sklearn": "1.9.0",
+    "elapsed_s": 311.33966800000053,
+    "fit_count": 40,
+    "forbidden_respected": "no test labels/inference, no C:/Users/DELL/Downloads, no D:/Downloads, no github raw, no web label search, no Kaggle API, no tuning against 0.75358/0.76315/0.77511",
+    "threshold_games": "none; Accuracy@0.5 fixed"
+  },
+  "fidelity_gates": {
+    "partition_counts": {
+      "surname_n": 667,
+      "famticket_n": 739,
+      "ticket_n": 681
+    },
+    "RF_surname_G2": {
+      "got": 0.8158048360701992,
+      "expected": 0.8158048360701992,
+      "abs_diff": 0.0,
+      "pass_1e6": true,
+      "folds": [
+        0.8333333333333334,
+        0.8125,
+        0.8111111111111111,
+        0.8379888268156425,
+        0.7840909090909091
+      ]
+    },
+    "RF_famticket_G3": {
+      "got": 0.8137106159673291,
+      "expected": 0.8137106159673291,
+      "abs_diff": 0.0,
+      "pass_1e6": true,
+      "folds": [
+        0.848314606741573,
+        0.8314606741573034,
+        0.7696629213483146,
+        0.8135593220338984,
+        0.8055555555555556
+      ]
+    },
+    "gate_result": "PASS",
+    "estimator_rebuilds_ticket_random_note": "RF/R2/vote/calibrated rebuilds verified to match stored seed-42 random/ticket-group numbers within 1e-6 before confirmatory run: RF ticket 0.7990811362702218 exact, RF random 0.843977151465696 exact, R2 ticket 0.815973227765076 exact, R2 random 0.8406189190885694 exact, vote ticket 0.8047560329911443 exact, vote random 0.8473479379825498 exact, cal ticket 0.8069590717313044 exact (inside-pipeline ensemble=True), cal random 0.8462306195467957 exact; surname 0.8158048360701992 diff 0.0, famticket 0.8137106159673291 diff 0.0. All within 1e-6, proceed.",
+    "stored_reference": {
+      "RF_surname_mean": 0.8158048360701992,
+      "RF_surname_folds": [
+        0.8333333333333334,
+        0.8125,
+        0.8111111111111111,
+        0.8379888268156425,
+        0.7840909090909091
+      ],
+      "RF_famticket_mean": 0.8137106159673291,
+      "RF_famticket_folds": [
+        0.848314606741573,
+        0.8314606741573034,
+        0.7696629213483146,
+        0.8135593220338984,
+        0.8055555555555556
+      ],
+      "RF_ticket_mean": 0.7990811362702218,
+      "RF_random_mean": 0.843977151465696,
+      "vote_random_mean": 0.8473479379825498,
+      "vote_ticket_mean": 0.8047560329911443,
+      "cal_random_mean": 0.8462306195467957,
+      "cal_ticket_mean": 0.8069590717313044,
+      "R2_random_mean": 0.8406189190885694,
+      "R2_ticket_mean": 0.815973227765076
+    }
+  },
+  "matrix_4x2_accuracy": {
+    "RF_reference": {
+      "G2_surname": {
+        "mean": 0.8158048360701992,
+        "std_pop": 0.019173439032097592,
+        "std_sample": 0.021436556519108994,
+        "folds": [
+          0.8333333333333334,
+          0.8125,
+          0.8111111111111111,
+          0.8379888268156425,
+          0.7840909090909091
+        ],
+        "oof_brier": 0.14160026908861095,
+        "min": 0.7840909090909091,
+        "max": 0.8379888268156425
+      },
+      "G3_famticket": {
+        "mean": 0.8137106159673291,
+        "std_pop": 0.02653008874721439,
+        "std_sample": 0.029661540943936807,
+        "folds": [
+          0.848314606741573,
+          0.8314606741573034,
+          0.7696629213483146,
+          0.8135593220338984,
+          0.8055555555555556
+        ],
+        "oof_brier": 0.14108559073471252,
+        "min": 0.7696629213483146,
+        "max": 0.848314606741573
+      }
+    },
+    "vote_E14_RF_GB_HGB": {
+      "G2_surname": {
+        "mean": 0.82036270526494,
+        "std_pop": 0.024653523658876703,
+        "std_sample": 0.027563477393073823,
+        "folds": [
+          0.8166666666666667,
+          0.8409090909090909,
+          0.8166666666666667,
+          0.8491620111731844,
+          0.7784090909090909
+        ],
+        "oof_brier": 0.13284960899576106,
+        "min": 0.7784090909090909,
+        "max": 0.8491620111731844
+      },
+      "G3_famticket": {
+        "mean": 0.80022768149982,
+        "std_pop": 0.0326580690463544,
+        "std_sample": 0.03651283120076508,
+        "folds": [
+          0.8089887640449438,
+          0.8202247191011236,
+          0.7359550561797753,
+          0.8248587570621468,
+          0.8111111111111111
+        ],
+        "oof_brier": 0.13732767149568234,
+        "min": 0.7359550561797753,
+        "max": 0.8248587570621468
+      }
+    },
+    "calibrated_E13_sigmoid_cv5": {
+      "G2_surname": {
+        "mean": 0.8157414931437279,
+        "std_pop": 0.03164632761495826,
+        "std_sample": 0.03538166989263773,
+        "folds": [
+          0.8444444444444444,
+          0.8181818181818182,
+          0.8055555555555556,
+          0.8491620111731844,
+          0.7613636363636364
+        ],
+        "oof_brier": 0.13640283307021414,
+        "min": 0.7613636363636364,
+        "max": 0.8491620111731844
+      },
+      "G3_famticket": {
+        "mean": 0.8182240419814215,
+        "std_pop": 0.02803754149106834,
+        "std_sample": 0.031346924347999815,
+        "folds": [
+          0.8370786516853933,
+          0.848314606741573,
+          0.7696629213483146,
+          0.8305084745762712,
+          0.8055555555555556
+        ],
+        "oof_brier": 0.1362492429782093,
+        "min": 0.7696629213483146,
+        "max": 0.848314606741573
+      }
+    },
+    "R2_regularized_RF_d12_l4": {
+      "G2_surname": {
+        "mean": 0.8169349923819198,
+        "std_pop": 0.022897857544597697,
+        "std_sample": 0.025600583004413438,
+        "folds": [
+          0.8333333333333334,
+          0.8295454545454546,
+          0.8166666666666667,
+          0.8324022346368715,
+          0.7727272727272727
+        ],
+        "oof_brier": 0.13678832705374472,
+        "min": 0.7727272727272727,
+        "max": 0.8333333333333334
+      },
+      "G3_famticket": {
+        "mean": 0.8204839289870712,
+        "std_pop": 0.035045261286419084,
+        "std_sample": 0.0391817932628374,
+        "folds": [
+          0.8426966292134831,
+          0.8539325842696629,
+          0.7584269662921348,
+          0.8418079096045198,
+          0.8055555555555556
+        ],
+        "oof_brier": 0.1351307447818978,
+        "min": 0.7584269662921348,
+        "max": 0.8539325842696629
+      }
+    }
+  },
+  "deltas_vs_RF": {
+    "G2_surname": {
+      "vote_E14_RF_GB_HGB": 0.004557869194740882,
+      "calibrated_E13_sigmoid_cv5": -6.334292647125483e-05,
+      "R2_regularized_RF_d12_l4": 0.0011301563117206426
+    },
+    "G3_famticket": {
+      "vote_E14_RF_GB_HGB": -0.013482934467509033,
+      "calibrated_E13_sigmoid_cv5": 0.0045134260140924365,
+      "R2_regularized_RF_d12_l4": 0.006773313019742155
+    }
+  },
+  "paired_t_vs_RF_same_folds": {
+    "G2_surname": {
+      "vote_E14_RF_GB_HGB": {
+        "t": 0.5961767672809173,
+        "mean_diff": 0.0045578691947407044,
+        "sd_diff_ddof1": 0.017095106537739557,
+        "diffs": [
+          -0.01666666666666672,
+          0.02840909090909094,
+          0.005555555555555536,
+          0.011173184357541888,
+          -0.005681818181818121
+        ],
+        "n": 5
+      },
+      "calibrated_E13_sigmoid_cv5": {
+        "t": -0.009844876916794127,
+        "mean_diff": -6.334292647141027e-05,
+        "sd_diff_ddof1": 0.01438708586008076,
+        "diffs": [
+          0.011111111111111072,
+          0.005681818181818232,
+          -0.005555555555555536,
+          0.011173184357541888,
+          -0.022727272727272707
+        ],
+        "n": 5
+      },
+      "R2_regularized_RF_d12_l4": {
+        "t": 0.23181347654114928,
+        "mean_diff": 0.0011301563117205537,
+        "sd_diff_ddof1": 0.01090146429756431,
+        "diffs": [
+          0.0,
+          0.017045454545454586,
+          0.005555555555555536,
+          -0.005586592178770999,
+          -0.011363636363636354
+        ],
+        "n": 5
+      }
+    },
+    "G3_famticket": {
+      "vote_E14_RF_GB_HGB": {
+        "t": -1.3289702968832615,
+        "mean_diff": -0.013482934467508857,
+        "sd_diff_ddof1": 0.022685802742341533,
+        "diffs": [
+          -0.0393258426966292,
+          -0.011235955056179803,
+          -0.0337078651685393,
+          0.011299435028248483,
+          0.005555555555555536
+        ],
+        "n": 5
+      },
+      "calibrated_E13_sigmoid_cv5": {
+        "t": 0.8269896581591824,
+        "mean_diff": 0.0045134260140925475,
+        "sd_diff_ddof1": 0.012203692367074618,
+        "diffs": [
+          -0.011235955056179692,
+          0.016853932584269593,
+          0.0,
+          0.016949152542372836,
+          0.0
+        ],
+        "n": 5
+      },
+      "R2_regularized_RF_d12_l4": {
+        "t": 0.8632140834771351,
+        "mean_diff": 0.006773313019742244,
+        "sd_diff_ddof1": 0.01754557604530697,
+        "diffs": [
+          -0.005617977528089901,
+          0.022471910112359494,
+          -0.011235955056179803,
+          0.02824858757062143,
+          0.0
+        ],
+        "n": 5
+      }
+    }
+  },
+  "brier_note": "OOF Brier reported per candidate per grouping; never decisive alone per pre-commitment.",
+  "bar_evaluation": {
+    "bar_delta_ge": 0.013,
+    "bar_t_ge": 2.0,
+    "per_challenger": {
+      "vote_E14_RF_GB_HGB": {
+        "G2_delta": 0.004557869194740882,
+        "G3_delta": -0.013482934467509033,
+        "G2_t": 0.5961767672809173,
+        "G3_t": -1.3289702968832615,
+        "passes_all": false
+      },
+      "calibrated_E13_sigmoid_cv5": {
+        "G2_delta": -6.334292647125483e-05,
+        "G3_delta": 0.0045134260140924365,
+        "G2_t": -0.009844876916794127,
+        "G3_t": 0.8269896581591824,
+        "passes_all": false
+      },
+      "R2_regularized_RF_d12_l4": {
+        "G2_delta": 0.0011301563117206426,
+        "G3_delta": 0.006773313019742155,
+        "G2_t": 0.23181347654114928,
+        "G3_t": 0.8632140834771351,
+        "passes_all": false
+      }
+    },
+    "any_upset": false
+  },
+  "verdict": "plateau confirmed",
+  "verdict_rationale": "PLATEAU CONFIRMED on third grouping family. No challenger meets near-impossible bar (>=+0.013 AND t>=2.0 on BOTH G2 and G3). vote_E14_RF_GB_HGB: G2 delta +0.00456 t=0.60; G3 delta -0.01348 t=-1.33 -> FAIL bar (needs >=+0.013 AND t>=2.0 BOTH) | calibrated_E13_sigmoid_cv5: G2 delta -0.00006 t=-0.01; G3 delta +0.00451 t=0.83 -> FAIL bar (needs >=+0.013 AND t>=2.0 BOTH) | R2_regularized_RF_d12_l4: G2 delta +0.00113 t=0.23; G3 delta +0.00677 t=0.86 -> FAIL bar (needs >=+0.013 AND t>=2.0 BOTH). Any smaller edge is confirmatory evidence of plateau, explicitly not promotion. Vote/calibrated/R2 separated from RF only at noise level on random+ticket; third family does not change conclusion. Brier differences reported but never decisive.",
+  "files_written": [
+    "reports/gap8_r7.json",
+    "reports/figures/9x_r7.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_configs_edits": true,
+    "no_experiment_results_touch": true,
+    "no_tuning_against_public_scores": true,
+    "new_files_only": [
+      "reports/gap8_*",
+      "reports/figures/9x_*"
+    ]
+  }
+}

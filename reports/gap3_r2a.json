@@ -1,0 +1,307 @@
+{
+  "worker": "R2A",
+  "representation": "TitlePclass = Title_str + _ + Pclass_str (stateless, row-wise, AFTER TitanicFeatureEngineer BEFORE preprocess INSIDE Pipeline; AddTitlePclass; no fit state; target-free; OneHot(handle_unknown=ignore); Title and Pclass retained)",
+  "reference": {
+    "tuned_RF_random_mean": 0.843977151465696,
+    "tuned_RF_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_RF_group_mean": 0.7990811362702218,
+    "rf_params": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "numeric": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "IsAlone",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ]
+  },
+  "protocol": {
+    "base_builder": "src.analysis.build_pipeline_with_features",
+    "variant_preprocess": "custom ColumnTransformer identical settings median/most-frequent + OneHot(handle_unknown=ignore, sparse_output=False), categorical + TitlePclass",
+    "random_splitter": "StratifiedKFold(5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(5, shuffle=True, random_state=42)",
+    "group_splitter_signature": "(n_splits=5, shuffle=False, random_state=None)",
+    "groups": "Ticket.strip()",
+    "scoring": "accuracy",
+    "oof_slices": "cross_val_predict with random CV on both pipes"
+  },
+  "titlepclass_audit": {
+    "n_levels": 14,
+    "levels": [
+      "Master_1",
+      "Master_2",
+      "Master_3",
+      "Miss_1",
+      "Miss_2",
+      "Miss_3",
+      "Mr_1",
+      "Mr_2",
+      "Mr_3",
+      "Mrs_1",
+      "Mrs_2",
+      "Mrs_3",
+      "Rare_1",
+      "Rare_2"
+    ],
+    "counts": {
+      "Mr_3": 319,
+      "Mr_1": 107,
+      "Miss_3": 102,
+      "Mr_2": 91,
+      "Miss_1": 48,
+      "Mrs_1": 43,
+      "Mrs_3": 42,
+      "Mrs_2": 41,
+      "Miss_2": 35,
+      "Master_3": 28,
+      "Rare_1": 15,
+      "Master_2": 9,
+      "Rare_2": 8,
+      "Master_1": 3
+    }
+  },
+  "results": {
+    "base_random": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432
+    },
+    "variant_random": {
+      "folds": [
+        0.8659217877094972,
+        0.8314606741573034,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.8439708743958321,
+      "std": 0.016250115512785445
+    },
+    "base_group": {
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ],
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414
+    },
+    "variant_group": {
+      "folds": [
+        0.8156424581005587,
+        0.8100558659217877,
+        0.8192090395480226,
+        0.7696629213483146,
+        0.7808988764044944
+      ],
+      "mean": 0.7990938322646356,
+      "std": 0.019979387874148952
+    },
+    "delta_random": -6.277069863891427e-06,
+    "delta_group": 1.2695994413780554e-05,
+    "fold_wins_random": {
+      "wins": 1,
+      "ties": 3,
+      "losses": 1,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8603351955307262,
+          "variant": 0.8659217877094972,
+          "delta": 0.005586592178770999
+        },
+        {
+          "fold": 1,
+          "base": 0.8370786516853933,
+          "variant": 0.8314606741573034,
+          "delta": -0.005617977528089901
+        },
+        {
+          "fold": 2,
+          "base": 0.8202247191011236,
+          "variant": 0.8202247191011236,
+          "delta": 0.0
+        },
+        {
+          "fold": 3,
+          "base": 0.848314606741573,
+          "variant": 0.848314606741573,
+          "delta": 0.0
+        },
+        {
+          "fold": 4,
+          "base": 0.8539325842696629,
+          "variant": 0.8539325842696629,
+          "delta": 0.0
+        }
+      ]
+    },
+    "fold_wins_group": {
+      "wins": 2,
+      "ties": 1,
+      "losses": 2,
+      "detail": [
+        {
+          "fold": 0,
+          "base": 0.8100558659217877,
+          "variant": 0.8156424581005587,
+          "delta": 0.005586592178770999
+        },
+        {
+          "fold": 1,
+          "base": 0.8156424581005587,
+          "variant": 0.8100558659217877,
+          "delta": -0.005586592178770999
+        },
+        {
+          "fold": 2,
+          "base": 0.807909604519774,
+          "variant": 0.8192090395480226,
+          "delta": 0.011299435028248594
+        },
+        {
+          "fold": 3,
+          "base": 0.7808988764044944,
+          "variant": 0.7696629213483146,
+          "delta": -0.011235955056179803
+        },
+        {
+          "fold": 4,
+          "base": 0.7808988764044944,
+          "variant": 0.7808988764044944,
+          "delta": 0.0
+        }
+      ]
+    }
+  },
+  "slices_oof_random": {
+    "Master": {
+      "n": 40,
+      "base_acc": 0.95,
+      "var_acc": 0.975,
+      "delta": 0.025000000000000022,
+      "base_err": 0.050000000000000044,
+      "var_err": 0.025000000000000022
+    },
+    "Miss": {
+      "n": 185,
+      "base_acc": 0.8162162162162162,
+      "var_acc": 0.8108108108108109,
+      "delta": -0.00540540540540535,
+      "base_err": 0.1837837837837838,
+      "var_err": 0.18918918918918914
+    },
+    "Mr": {
+      "n": 517,
+      "base_acc": 0.8549323017408124,
+      "var_acc": 0.8549323017408124,
+      "delta": 0.0,
+      "base_err": 0.14506769825918764,
+      "var_err": 0.14506769825918764
+    },
+    "Mrs": {
+      "n": 126,
+      "base_acc": 0.8253968253968254,
+      "var_acc": 0.8253968253968254,
+      "delta": 0.0,
+      "base_err": 0.17460317460317465,
+      "var_err": 0.17460317460317465
+    },
+    "Rare": {
+      "n": 23,
+      "base_acc": 0.7391304347826086,
+      "var_acc": 0.7391304347826086,
+      "delta": 0.0,
+      "base_err": 0.26086956521739135,
+      "var_err": 0.26086956521739135
+    },
+    "Miss+Mrs": {
+      "n": 311,
+      "base_acc": 0.819935691318328,
+      "var_acc": 0.8167202572347267,
+      "delta": -0.003215434083601254,
+      "base_err": 0.180064308681672,
+      "var_err": 0.18327974276527326
+    }
+  },
+  "slice_summary": {
+    "Mr_delta": 0.0,
+    "MissMrs_delta": -0.003215434083601254,
+    "MissMrs_err_drop": -0.003215434083601254
+  },
+  "gates": {
+    "G1_mean_random_gt_0_8440": {
+      "value": 0.8439708743958321,
+      "threshold": 0.844,
+      "passed": false
+    },
+    "G2_mean_group_gt_0_7991": {
+      "value": 0.7990938322646356,
+      "threshold": 0.7991,
+      "passed": false
+    },
+    "G3_delta_random_ge_0_0045_and_ge4wins": {
+      "delta": -6.277069863891427e-06,
+      "wins": 1,
+      "passed": false
+    },
+    "G4_delta_group_ge_0_002_and_ge3wins": {
+      "delta": 1.2695994413780554e-05,
+      "wins": 2,
+      "passed": false
+    },
+    "G5_MissMrs_err_drop_and_Mr_degr_le_0_01": {
+      "MissMrs_err_drop": -0.003215434083601254,
+      "Mr_delta": 0.0,
+      "passed": false
+    }
+  },
+  "verdict": "REJECT",
+  "rationale": "Evidence (FP 9/10 female over-predicted dead; FN 10/10 lone-Mr missed; Rare 0.739/Miss 0.816/Mrs 0.825 vs Mr 0.855; Pclass-2 0.913 vs Pclass-1 0.829; impurity Title_Mr 0.231 vs near-zero Miss/Mrs/Pclass despite Sex x Pclass extremes 96.81pct vs 13.54pct) motivated Title x Pclass interaction; used as rationale only, not re-derived.",
+  "falsifier_check": "flat/down on either CV, or <4/5 random wins, or female-FP unchanged while group drops => REJECT",
+  "files_written": [
+    "reports/gap3_r2a.json",
+    "reports/figures/4x_r2a.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_tuning_against_public_scores": true
+  }
+}

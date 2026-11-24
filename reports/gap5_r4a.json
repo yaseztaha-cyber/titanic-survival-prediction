@@ -1,0 +1,721 @@
+{
+  "worker": "R4A leave-one-group-out family/title/mother",
+  "question": "Does REMOVING dead weight help? (redundancy r=0.891, 3 family encodings; ablation ADD family -0.0022; Known-only cut +0.0034 sometimes beat adds)",
+  "reference": {
+    "model": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1)",
+    "rf_params": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "tuned_RF_random_mean": 0.843977151465696,
+    "tuned_RF_random_folds": [
+      0.8603351955307262,
+      0.8370786516853933,
+      0.8202247191011236,
+      0.848314606741573,
+      0.8539325842696629
+    ],
+    "tuned_RF_group_mean": 0.7990811362702218,
+    "tuned_RF_group_folds": [
+      0.8100558659217877,
+      0.8156424581005587,
+      0.807909604519774,
+      0.7808988764044944,
+      0.7808988764044944
+    ],
+    "numeric_full": [
+      "Age",
+      "Fare",
+      "SibSp",
+      "Parch",
+      "FamilySize",
+      "IsAlone",
+      "TicketGroupSize",
+      "FarePerPerson",
+      "CabinKnown",
+      "Mother"
+    ],
+    "categorical_full": [
+      "Pclass",
+      "Sex",
+      "Embarked",
+      "Title",
+      "CabinDeck",
+      "FamilySizeCategory"
+    ],
+    "reproduced_exactly": true
+  },
+  "protocol": {
+    "base": "full production set via from src.analysis import build_pipeline_with_features (preserves config order)",
+    "variants": {
+      "a_minus_family": "drop exactly {FamilySize,IsAlone,FamilySizeCategory}: numeric [Age,Fare,SibSp,Parch,TicketGroupSize,FarePerPerson,CabinKnown,Mother]; categorical [Pclass,Sex,Embarked,Title,CabinDeck]",
+      "b_minus_title": "drop exactly {Title}: numeric full 10; categorical [Pclass,Sex,Embarked,CabinDeck,FamilySizeCategory]",
+      "c_minus_mother": "drop exactly {Mother}: numeric [Age,Fare,SibSp,Parch,FamilySize,IsAlone,TicketGroupSize,FarePerPerson,CabinKnown]; categorical full 6"
+    },
+    "model": "tuned RF (500, max_depth 12, min_split 5, min_leaf 1, max_features None, rs 42, n_jobs -1)",
+    "random_splitter": "StratifiedKFold(5, shuffle=True, random_state=42)",
+    "group_splitter": "StratifiedGroupKFold(5, shuffle=True, random_state=42) on Ticket.astype(str).str.strip()",
+    "splitter_signatures_verified_runtime": {
+      "StratifiedKFold": "(n_splits=5, *, shuffle=False, random_state=None)",
+      "StratifiedGroupKFold": "(n_splits=5, shuffle=False, random_state=None)",
+      "sklearn": "1.9.0",
+      "shuffle_random_state_supported": true
+    },
+    "groups": "Ticket.astype(str).str.strip() (n_groups=681)",
+    "scoring": "accuracy",
+    "std_convention": "population ddof=0",
+    "data": "data/raw/train.csv (X=train minus Survived, y=Survived); test labels hidden - never used/inferred",
+    "oof_slices": "cross_val_predict labels under random CV on base + each variant pipe; slices FamilySizeCategory (Alone/Small/Large), IsAlone (0/1), Title (Mr/Mrs/Miss/Master/Rare), Mother (0/1) from TitanicFeatureEngineer().fit(X).transform(X) row-wise keys",
+    "fits": "3 variants x 10 fits (5 random + 5 group) + base 10 fits + OOF 4x5 random fits for slice sanity",
+    "sklearn": "1.9.0",
+    "elapsed_s_total": 201.4,
+    "precommitted_rule": "PERMANENTLY SIMPLIFY Final by dropping group X iff random Delta >= -0.001 (no meaningful loss) AND group Delta >= +0.002 (cleaner generalizes better). Else KEEP Final. A removal that hurts either CV beyond noise is itself evidence the group earns its keep."
+  },
+  "results": {
+    "base_random": {
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ],
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "min": 0.8202247191011236,
+      "max": 0.8603351955307262
+    },
+    "base_group": {
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ],
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "min": 0.7808988764044944,
+      "max": 0.8156424581005587
+    },
+    "a_minus_family": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck"
+      ],
+      "random": {
+        "folds": [
+          0.8715083798882681,
+          0.8370786516853933,
+          0.8202247191011236,
+          0.848314606741573,
+          0.848314606741573
+        ],
+        "mean": 0.8450881928315862,
+        "std": 0.016740315725010304,
+        "min": 0.8202247191011236,
+        "max": 0.8715083798882681
+      },
+      "group": {
+        "folds": [
+          0.8156424581005587,
+          0.8100558659217877,
+          0.8192090395480226,
+          0.7696629213483146,
+          0.7808988764044944
+        ],
+        "mean": 0.7990938322646356,
+        "std": 0.019979387874148952,
+        "min": 0.7696629213483146,
+        "max": 0.8192090395480226
+      },
+      "delta_random": 0.0011110413658902418,
+      "delta_group": 1.2695994413780554e-05,
+      "fold_wins": {
+        "random": {
+          "wins": 1,
+          "ties": 3,
+          "losses": 1,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8603351955307262,
+              "variant": 0.8715083798882681,
+              "delta": 0.011173184357541888,
+              "result": "win"
+            },
+            {
+              "fold": 1,
+              "base": 0.8370786516853933,
+              "variant": 0.8370786516853933,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 2,
+              "base": 0.8202247191011236,
+              "variant": 0.8202247191011236,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 3,
+              "base": 0.848314606741573,
+              "variant": 0.848314606741573,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 4,
+              "base": 0.8539325842696629,
+              "variant": 0.848314606741573,
+              "delta": -0.005617977528089901,
+              "result": "loss"
+            }
+          ]
+        },
+        "group": {
+          "wins": 2,
+          "ties": 1,
+          "losses": 2,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8100558659217877,
+              "variant": 0.8156424581005587,
+              "delta": 0.005586592178770999,
+              "result": "win"
+            },
+            {
+              "fold": 1,
+              "base": 0.8156424581005587,
+              "variant": 0.8100558659217877,
+              "delta": -0.005586592178770999,
+              "result": "loss"
+            },
+            {
+              "fold": 2,
+              "base": 0.807909604519774,
+              "variant": 0.8192090395480226,
+              "delta": 0.011299435028248594,
+              "result": "win"
+            },
+            {
+              "fold": 3,
+              "base": 0.7808988764044944,
+              "variant": 0.7696629213483146,
+              "delta": -0.011235955056179803,
+              "result": "loss"
+            },
+            {
+              "fold": 4,
+              "base": 0.7808988764044944,
+              "variant": 0.7808988764044944,
+              "delta": 0.0,
+              "result": "tie"
+            }
+          ]
+        }
+      }
+    },
+    "b_minus_title": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ],
+      "random": {
+        "folds": [
+          0.8603351955307262,
+          0.8426966292134831,
+          0.8033707865168539,
+          0.8426966292134831,
+          0.8595505617977528
+        ],
+        "mean": 0.8417299604544599,
+        "std": 0.020673769499704488,
+        "min": 0.8033707865168539,
+        "max": 0.8603351955307262
+      },
+      "group": {
+        "folds": [
+          0.8268156424581006,
+          0.7988826815642458,
+          0.807909604519774,
+          0.7808988764044944,
+          0.7752808988764045
+        ],
+        "mean": 0.7979575407646038,
+        "std": 0.018643591976412903,
+        "min": 0.7752808988764045,
+        "max": 0.8268156424581006
+      },
+      "delta_random": -0.0022471910112360494,
+      "delta_group": -0.0011235955056180247,
+      "fold_wins": {
+        "random": {
+          "wins": 2,
+          "ties": 1,
+          "losses": 2,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8603351955307262,
+              "variant": 0.8603351955307262,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 1,
+              "base": 0.8370786516853933,
+              "variant": 0.8426966292134831,
+              "delta": 0.00561797752808979,
+              "result": "win"
+            },
+            {
+              "fold": 2,
+              "base": 0.8202247191011236,
+              "variant": 0.8033707865168539,
+              "delta": -0.016853932584269704,
+              "result": "loss"
+            },
+            {
+              "fold": 3,
+              "base": 0.848314606741573,
+              "variant": 0.8426966292134831,
+              "delta": -0.005617977528089901,
+              "result": "loss"
+            },
+            {
+              "fold": 4,
+              "base": 0.8539325842696629,
+              "variant": 0.8595505617977528,
+              "delta": 0.005617977528089901,
+              "result": "win"
+            }
+          ]
+        },
+        "group": {
+          "wins": 1,
+          "ties": 2,
+          "losses": 2,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8100558659217877,
+              "variant": 0.8268156424581006,
+              "delta": 0.016759776536312887,
+              "result": "win"
+            },
+            {
+              "fold": 1,
+              "base": 0.8156424581005587,
+              "variant": 0.7988826815642458,
+              "delta": -0.016759776536312887,
+              "result": "loss"
+            },
+            {
+              "fold": 2,
+              "base": 0.807909604519774,
+              "variant": 0.807909604519774,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 3,
+              "base": 0.7808988764044944,
+              "variant": 0.7808988764044944,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 4,
+              "base": 0.7808988764044944,
+              "variant": 0.7752808988764045,
+              "delta": -0.005617977528089901,
+              "result": "loss"
+            }
+          ]
+        }
+      }
+    },
+    "c_minus_mother": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ],
+      "random": {
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8202247191011236,
+          0.848314606741573,
+          0.8539325842696629
+        ],
+        "mean": 0.843977151465696,
+        "std": 0.01412286875015432,
+        "min": 0.8202247191011236,
+        "max": 0.8603351955307262
+      },
+      "group": {
+        "folds": [
+          0.8212290502793296,
+          0.8156424581005587,
+          0.8135593220338984,
+          0.7696629213483146,
+          0.7865168539325843
+        ],
+        "mean": 0.801322121138937,
+        "std": 0.019862566967402226,
+        "min": 0.7696629213483146,
+        "max": 0.8212290502793296
+      },
+      "delta_random": 0.0,
+      "delta_group": 0.002240984868715157,
+      "fold_wins": {
+        "random": {
+          "wins": 0,
+          "ties": 5,
+          "losses": 0,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8603351955307262,
+              "variant": 0.8603351955307262,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 1,
+              "base": 0.8370786516853933,
+              "variant": 0.8370786516853933,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 2,
+              "base": 0.8202247191011236,
+              "variant": 0.8202247191011236,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 3,
+              "base": 0.848314606741573,
+              "variant": 0.848314606741573,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 4,
+              "base": 0.8539325842696629,
+              "variant": 0.8539325842696629,
+              "delta": 0.0,
+              "result": "tie"
+            }
+          ]
+        },
+        "group": {
+          "wins": 3,
+          "ties": 1,
+          "losses": 1,
+          "detail": [
+            {
+              "fold": 0,
+              "base": 0.8100558659217877,
+              "variant": 0.8212290502793296,
+              "delta": 0.011173184357541888,
+              "result": "win"
+            },
+            {
+              "fold": 1,
+              "base": 0.8156424581005587,
+              "variant": 0.8156424581005587,
+              "delta": 0.0,
+              "result": "tie"
+            },
+            {
+              "fold": 2,
+              "base": 0.807909604519774,
+              "variant": 0.8135593220338984,
+              "delta": 0.005649717514124353,
+              "result": "win"
+            },
+            {
+              "fold": 3,
+              "base": 0.7808988764044944,
+              "variant": 0.7696629213483146,
+              "delta": -0.011235955056179803,
+              "result": "loss"
+            },
+            {
+              "fold": 4,
+              "base": 0.7808988764044944,
+              "variant": 0.7865168539325843,
+              "delta": 0.005617977528089901,
+              "result": "win"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "slices_oof_random": {
+    "FamilySizeCategory": {
+      "Alone": {
+        "n": 537,
+        "base_acc": 0.845437616387337,
+        "a_minus_family_acc": 0.8435754189944135,
+        "a_minus_family_delta": -0.0018621973929235924,
+        "b_minus_title_acc": 0.8417132216014898,
+        "b_minus_title_delta": -0.003724394785847296,
+        "c_minus_mother_acc": 0.8472998137802608,
+        "c_minus_mother_delta": 0.0018621973929237035
+      },
+      "Large": {
+        "n": 62,
+        "base_acc": 0.9193548387096774,
+        "a_minus_family_acc": 0.9193548387096774,
+        "a_minus_family_delta": 0.0,
+        "b_minus_title_acc": 0.9354838709677419,
+        "b_minus_title_delta": 0.016129032258064502,
+        "c_minus_mother_acc": 0.9193548387096774,
+        "c_minus_mother_delta": 0.0
+      },
+      "Small": {
+        "n": 292,
+        "base_acc": 0.8253424657534246,
+        "a_minus_family_acc": 0.8321917808219178,
+        "a_minus_family_delta": 0.006849315068493178,
+        "b_minus_title_acc": 0.821917808219178,
+        "b_minus_title_delta": -0.003424657534246589,
+        "c_minus_mother_acc": 0.821917808219178,
+        "c_minus_mother_delta": -0.003424657534246589
+      }
+    },
+    "IsAlone": {
+      "0": {
+        "n": 354,
+        "base_acc": 0.8418079096045198,
+        "a_minus_family_acc": 0.847457627118644,
+        "a_minus_family_delta": 0.005649717514124242,
+        "b_minus_title_acc": 0.8418079096045198,
+        "b_minus_title_delta": 0.0,
+        "c_minus_mother_acc": 0.8389830508474576,
+        "c_minus_mother_delta": -0.0028248587570621764
+      },
+      "1": {
+        "n": 537,
+        "base_acc": 0.845437616387337,
+        "a_minus_family_acc": 0.8435754189944135,
+        "a_minus_family_delta": -0.0018621973929235924,
+        "b_minus_title_acc": 0.8417132216014898,
+        "b_minus_title_delta": -0.003724394785847296,
+        "c_minus_mother_acc": 0.8472998137802608,
+        "c_minus_mother_delta": 0.0018621973929237035
+      }
+    },
+    "Title": {
+      "Master": {
+        "n": 40,
+        "base_acc": 0.95,
+        "a_minus_family_acc": 0.975,
+        "a_minus_family_delta": 0.025000000000000022,
+        "b_minus_title_acc": 0.925,
+        "b_minus_title_delta": -0.02499999999999991,
+        "c_minus_mother_acc": 0.95,
+        "c_minus_mother_delta": 0.0
+      },
+      "Miss": {
+        "n": 185,
+        "base_acc": 0.8162162162162162,
+        "a_minus_family_acc": 0.8108108108108109,
+        "a_minus_family_delta": -0.00540540540540535,
+        "b_minus_title_acc": 0.8162162162162162,
+        "b_minus_title_delta": 0.0,
+        "c_minus_mother_acc": 0.8162162162162162,
+        "c_minus_mother_delta": 0.0
+      },
+      "Mr": {
+        "n": 517,
+        "base_acc": 0.8549323017408124,
+        "a_minus_family_acc": 0.8568665377176016,
+        "a_minus_family_delta": 0.0019342359767892114,
+        "b_minus_title_acc": 0.8452611218568665,
+        "b_minus_title_delta": -0.009671179883945835,
+        "c_minus_mother_acc": 0.8529980657640233,
+        "c_minus_mother_delta": -0.0019342359767891004
+      },
+      "Mrs": {
+        "n": 126,
+        "base_acc": 0.8253968253968254,
+        "a_minus_family_acc": 0.8333333333333334,
+        "a_minus_family_delta": 0.00793650793650802,
+        "b_minus_title_acc": 0.8412698412698413,
+        "b_minus_title_delta": 0.015873015873015928,
+        "c_minus_mother_acc": 0.8333333333333334,
+        "c_minus_mother_delta": 0.00793650793650802
+      },
+      "Rare": {
+        "n": 23,
+        "base_acc": 0.7391304347826086,
+        "a_minus_family_acc": 0.6956521739130435,
+        "a_minus_family_delta": -0.04347826086956519,
+        "b_minus_title_acc": 0.8260869565217391,
+        "b_minus_title_delta": 0.08695652173913049,
+        "c_minus_mother_acc": 0.7391304347826086,
+        "c_minus_mother_delta": 0.0
+      }
+    },
+    "Mother": {
+      "0": {
+        "n": 827,
+        "base_acc": 0.8428053204353083,
+        "a_minus_family_acc": 0.8428053204353083,
+        "a_minus_family_delta": 0.0,
+        "b_minus_title_acc": 0.8391777509068924,
+        "b_minus_title_delta": -0.0036275695284159193,
+        "c_minus_mother_acc": 0.841596130592503,
+        "c_minus_mother_delta": -0.0012091898428052694
+      },
+      "1": {
+        "n": 64,
+        "base_acc": 0.859375,
+        "a_minus_family_acc": 0.875,
+        "a_minus_family_delta": 0.015625,
+        "b_minus_title_acc": 0.875,
+        "b_minus_title_delta": 0.015625,
+        "c_minus_mother_acc": 0.875,
+        "c_minus_mother_delta": 0.015625
+      }
+    }
+  },
+  "slice_notes": {
+    "a_minus_family": "Family slices: Small (n=292) 0.82534->0.83219 (+0.00685) and non-alone IsAlone=0 (n=354) 0.84181->0.84746 (+0.00565) improve; Alone (n=537) 0.84544->0.84358 (-0.00186) flat-down; Large (n=62) tie 0.91935. Title slices: Master (n=40) 0.95->0.975 (+0.025, small-n), Mrs 0.82540->0.83333 (+0.00794), Mr +0.00193; Miss -0.00541; Rare (n=23) 0.73913->0.69565 (-0.04348, tiny-n noisy). Mother=1 (n=64) 0.85938->0.875 (+0.01563). Mixed: gains concentrate in non-alone/Small, losses in Alone/Rare \u2014 no clean family-slice win.",
+    "b_minus_title": "Title slices carry the loss: Mr (n=517, majority) 0.85493->0.84526 (-0.00967); Master (n=40) 0.95->0.925 (-0.025); Small -0.00342; Alone -0.00372. Offsetting Rare (n=23) 0.73913->0.82609 (+0.08696, 2 extra correct of 23, noisy) and Mrs +0.01587 / Large +0.01613 / Mother=1 +0.01563 do not compensate: core Mr/Master degradation explains random -0.00225 / group -0.00112. Title earns its keep.",
+    "c_minus_mother": "Mother=1 (n=64) 0.85938->0.875 (+0.01563, +1 correct) \u2014 removing Mother IMPROVES mothers themselves; Mrs 0.82540->0.83333 (+0.00794); Alone +0.00186. Costs: Small -0.00342 (n=292), IsAlone=0 -0.00282 (n=354), Mother=0 -0.00121 (n=827), Mr -0.00193 \u2014 all within noise (<=0.0035). No slice collapses; even the target slice benefits. Consistent with dead-weight removal."
+  },
+  "gates": {
+    "a_minus_family": {
+      "random_ge_minus0_001": {
+        "delta": 0.0011110413658902418,
+        "threshold": -0.001,
+        "passed": true
+      },
+      "group_ge_plus0_002": {
+        "delta": 1.2695994413780554e-05,
+        "threshold": 0.002,
+        "passed": false
+      },
+      "simplify": false,
+      "decision": "KEEP"
+    },
+    "b_minus_title": {
+      "random_ge_minus0_001": {
+        "delta": -0.0022471910112360494,
+        "threshold": -0.001,
+        "passed": false
+      },
+      "group_ge_plus0_002": {
+        "delta": -0.0011235955056180247,
+        "threshold": 0.002,
+        "passed": false
+      },
+      "simplify": false,
+      "decision": "KEEP"
+    },
+    "c_minus_mother": {
+      "random_ge_minus0_001": {
+        "delta": 0.0,
+        "threshold": -0.001,
+        "passed": true
+      },
+      "group_ge_plus0_002": {
+        "delta": 0.002240984868715157,
+        "threshold": 0.002,
+        "passed": true
+      },
+      "simplify": true,
+      "decision": "SIMPLIFY"
+    }
+  },
+  "gate_reasoning": {
+    "a_minus_family": "random Delta +0.00111 >= -0.001 PASS (tiny gain +0.00111, 1W/3T/1L driven by fold0 +0.01117 offset by fold4 -0.00562); group Delta +0.00001 >= +0.002 FAIL (+0.00001 essentially zero, 2W/1T/2L, std inflates 0.01506->0.01998). AND rule fails => KEEP Final. Family redundancy (r=0.891) does not translate to group gain on removal.",
+    "b_minus_title": "random Delta -0.00225 >= -0.001 FAIL (-0.00225 beyond noise, 2W/1T/2L with fold2 -0.01685); group Delta -0.00112 >= +0.002 FAIL (-0.00112, 1W/2T/2L). Both gates fail => KEEP Final. Removal hurts either CV beyond noise => Title earns its keep (Mr/Master slices confirm), not a failure of the test.",
+    "c_minus_mother": "random Delta +0.00000 >= -0.001 PASS (exactly 0.0, 5/5 ties bit-for-bit \u2014 Mother unused on random folds); group Delta +0.00224 >= +0.002 PASS (+0.00224, 3W/1T/1L: +0.01117/+0.00565/+0.00562 vs single -0.01124, std 0.01506->0.01986 inflated but mean clears). AND rule passes => SIMPLIFY Final by dropping Mother."
+  },
+  "verdicts": {
+    "a_minus_family": "KEEP",
+    "b_minus_title": "KEEP",
+    "c_minus_mother": "SIMPLIFY"
+  },
+  "verdict_summary": "KEEP family encodings; KEEP Title; PERMANENTLY SIMPLIFY Final by dropping Mother only (random 0.0, group +0.00224).",
+  "rationale": "Pre-committed AND gate applied literally. (a) family removal gives random +0.00111 but group +0.00001 ~ zero with variance inflation and mixed slices => fails group-magnitude leg => KEEP (redundancy is not costless to remove). (b) title removal hurts both CVs (-0.00225/-0.00112) with core Mr/Master slice drops => fails both legs => KEEP; per protocol this hurt is evidence Title earns its keep. (c) mother removal is exactly neutral on random (identical folds) and +0.00224 on ticket-group with 3W/1T/1L and Mother=1 slice itself +0.01563 => passes both legs => SIMPLIFY. No test labels used; 3x10 fits.",
+  "falsifier_check": "If family were pure dead weight, (a) group should rise >=+0.002; observed +0.00001 => not dead weight under group shift. If Title were redundant, (b) deltas should be >=-0.001/>=+0.002; observed both negative with Mr -0.0097 => Title carries signal. If Mother were useful, (c) removal should cost random and/or group; observed random 0.0 tie + group +0.00224 with Mother-slice gain => Mother is dead weight.",
+  "files_written": [
+    "reports/gap5_r4a.json",
+    "reports/figures/6x_r4a.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels": true,
+    "no_forbidden_paths": true,
+    "no_src_edits": true,
+    "no_configs_edits": true,
+    "no_notebook_edits": true,
+    "no_experiment_results_touch": true,
+    "no_tuning_against_public_scores": true,
+    "new_files_only": [
+      "reports/gap5_r4a.json",
+      "reports/figures/6x_r4a.png"
+    ],
+    "method": "build_pipeline_with_features column-subset only; no fitted state outside folds except OOF slice keys (row-wise Title/Family/Mother) and Ticket.strip() groups; target-free"
+  }
+}

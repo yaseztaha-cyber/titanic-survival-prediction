@@ -1,0 +1,219 @@
+{
+  "experiments": [
+    {
+      "name": "logreg_C0.1",
+      "params": {
+        "C": 0.1,
+        "max_iter": 1000,
+        "scale_numeric": true,
+        "features": "production"
+      },
+      "random": {
+        "mean": 0.8249074132195091,
+        "std": 0.008417487495123464,
+        "folds": [
+          0.8324022346368715,
+          0.8258426966292135,
+          0.8089887640449438,
+          0.8258426966292135,
+          0.8314606741573034
+        ]
+      },
+      "group": {
+        "mean": 0.8204423596534065,
+        "std": 0.03319298799895098,
+        "folds": [
+          0.8491620111731844,
+          0.7932960893854749,
+          0.8361581920903954,
+          0.7696629213483146,
+          0.8539325842696629
+        ]
+      }
+    },
+    {
+      "name": "logreg_C0.5",
+      "params": {
+        "C": 0.5,
+        "max_iter": 1000,
+        "scale_numeric": true,
+        "features": "production"
+      },
+      "random": {
+        "mean": 0.828278199736363,
+        "std": 0.013628335449546291,
+        "folds": [
+          0.8324022346368715,
+          0.8370786516853933,
+          0.8033707865168539,
+          0.8258426966292135,
+          0.8426966292134831
+        ]
+      },
+      "group": {
+        "mean": 0.8305485130614476,
+        "std": 0.022085319342501512,
+        "folds": [
+          0.8491620111731844,
+          0.8044692737430168,
+          0.8418079096045198,
+          0.8033707865168539,
+          0.8539325842696629
+        ]
+      }
+    },
+    {
+      "name": "logreg_C1.0",
+      "params": {
+        "C": 1.0,
+        "max_iter": 1000,
+        "scale_numeric": true,
+        "features": "production"
+      },
+      "random": {
+        "mean": 0.8282781997363632,
+        "std": 0.01577513455212368,
+        "folds": [
+          0.8324022346368715,
+          0.8426966292134831,
+          0.797752808988764,
+          0.8314606741573034,
+          0.8370786516853933
+        ]
+      },
+      "group": {
+        "mean": 0.8237878251087759,
+        "std": 0.027882644700231777,
+        "folds": [
+          0.8435754189944135,
+          0.8044692737430168,
+          0.8192090395480226,
+          0.7865168539325843,
+          0.8651685393258427
+        ]
+      }
+    },
+    {
+      "name": "logreg_C5.0",
+      "params": {
+        "C": 5.0,
+        "max_iter": 1000,
+        "scale_numeric": true,
+        "features": "production"
+      },
+      "random": {
+        "mean": 0.8316364321134895,
+        "std": 0.01752327671665253,
+        "folds": [
+          0.8435754189944135,
+          0.8426966292134831,
+          0.797752808988764,
+          0.8314606741573034,
+          0.8426966292134831
+        ]
+      },
+      "group": {
+        "mean": 0.8237815480389121,
+        "std": 0.02722542728189082,
+        "folds": [
+          0.8491620111731844,
+          0.8044692737430168,
+          0.8192090395480226,
+          0.7865168539325843,
+          0.8595505617977528
+        ]
+      }
+    },
+    {
+      "name": "calibrated_rf_cv5",
+      "params": {
+        "base": "tuned_RF",
+        "base_params": {
+          "n_estimators": 500,
+          "max_depth": 12,
+          "min_samples_split": 5,
+          "min_samples_leaf": 1,
+          "max_features": null,
+          "random_state": 42,
+          "n_jobs": -1
+        },
+        "calibration": "sigmoid_default",
+        "cv": 5,
+        "features": "production"
+      },
+      "random": {
+        "mean": 0.8462306195467957,
+        "std": 0.008565742067209125,
+        "folds": [
+          0.8547486033519553,
+          0.8426966292134831,
+          0.8314606741573034,
+          0.848314606741573,
+          0.8539325842696629
+        ]
+      },
+      "group": {
+        "mean": 0.8069590717313044,
+        "std": 0.017606837212671936,
+        "folds": [
+          0.8212290502793296,
+          0.8100558659217877,
+          0.8248587570621468,
+          0.7752808988764045,
+          0.8033707865168539
+        ]
+      },
+      "brier": 0.12147746662464909
+    }
+  ],
+  "reference": {
+    "model": "tuned_RF",
+    "params": {
+      "n_estimators": 500,
+      "max_depth": 12,
+      "min_samples_split": 5,
+      "min_samples_leaf": 1,
+      "max_features": null,
+      "random_state": 42,
+      "n_jobs": -1
+    },
+    "random": {
+      "mean": 0.843977151465696,
+      "std": 0.01412286875015432,
+      "folds": [
+        0.8603351955307262,
+        0.8370786516853933,
+        0.8202247191011236,
+        0.848314606741573,
+        0.8539325842696629
+      ]
+    },
+    "group": {
+      "mean": 0.7990811362702218,
+      "std": 0.015058904813936414,
+      "folds": [
+        0.8100558659217877,
+        0.8156424581005587,
+        0.807909604519774,
+        0.7808988764044944,
+        0.7808988764044944
+      ]
+    },
+    "brier": 0.124021,
+    "splitters": "random: StratifiedKFold(5,shuffle,42) accuracy; group: StratifiedGroupKFold(5,shuffle,42) on Ticket accuracy",
+    "brier_note": "remeasured RF OOF Brier 0.124021 (random-CV predict_proba) matches 0.1240 baseline"
+  },
+  "recommendation": {
+    "adopt_bool": true,
+    "candidate_or_null": "calibrated_rf_cv5",
+    "reason": "ADOPT (marginal): calibrated_rf_cv5 random 0.8462 beats 0.8440 threshold (+0.0022 over RF 0.8440) and group 0.8070 exceeds RF 0.7991 (+0.0079, within noise floor 0.015); Brier 0.1215 improves on 0.1240 (-0.0025). Gains are within 1 std (random std 0.0086, ref 0.0141) so benefit is small but meets pre-committed rule. All 4 LR settings FAIL random threshold (best C=5.0 random 0.8316<0.8440) despite strong group robustness (e.g. C=0.5 group 0.8305). No production file changed."
+  },
+  "meta": {
+    "splitters": "random StratifiedKFold(5,shuffle,42) accuracy; group StratifiedGroupKFold(5,shuffle,42) on Ticket accuracy",
+    "features": "production via build_pipeline_with_features (config order); LR scale_numeric=True via StandardScaler after imputer",
+    "std": "population ddof=0",
+    "data": "data/raw/train.csv (X minus Survived, y Survived)",
+    "seed": 42,
+    "note": "tuned RF reference preserved+remeasured; all candidates freshly measured, same splitters/scoring"
+  }
+}

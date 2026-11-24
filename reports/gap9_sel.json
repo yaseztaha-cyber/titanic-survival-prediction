@@ -1,0 +1,354 @@
+{
+  "worker": "V2C_groupCV_model_selection",
+  "precommitted_selection_rule": "SELECT SOLELY BY ticket-group CV mean (pre-committed): the group winner is the finding, regardless of random ranking.",
+  "precommitted_adopt_rule": "Recommend ADOPT-FOR-V2 ONLY if the group winner ALSO satisfies ALL THREE: (1) random cost vs reference <= 0.0067, (2) paired-t vs reference on group folds >= 2.0, (3) group-OOF Brier not worse by > 0.002 (winner_group_brier - ref_group_brier <= 0.002). Otherwise RETAIN (record group ranking as evidence only).",
+  "protocol": {
+    "data": "data/raw/train.csv ONLY (X=train minus Survived, y=Survived). Test labels hidden - never used/inferred. No submission.csv generated (recommendation only).",
+    "production_features": {
+      "numeric": [
+        "Age",
+        "Fare",
+        "SibSp",
+        "Parch",
+        "FamilySize",
+        "IsAlone",
+        "TicketGroupSize",
+        "FarePerPerson",
+        "CabinKnown",
+        "Mother"
+      ],
+      "categorical": [
+        "Pclass",
+        "Sex",
+        "Embarked",
+        "Title",
+        "CabinDeck",
+        "FamilySizeCategory"
+      ]
+    },
+    "builders": "from src.models import make_cv; from src.analysis import build_pipeline_with_features; from src.preprocessing import build_full_pipeline",
+    "random_splitter": "StratifiedKFold(n_splits=5, shuffle=True, random_state=42) via src.models.make_cv()",
+    "group_splitter": "StratifiedGroupKFold(n_splits=5, shuffle=True, random_state=42) on Ticket.strip()",
+    "sgkf_signature_runtime": "(n_splits=5, shuffle=False, random_state=None)",
+    "sgkf_note": "Runtime-verified via inspect.signature on sklearn 1.9.0: shuffle=True+random_state=42 supported and used; groups = X['Ticket'].astype(str).str.strip() (681 groups).",
+    "sklearn_version": "1.9.0",
+    "fairness": "Identical precomputed split indices reused for all 5 candidates (fair paired comparison); one fit per fold yields both accuracy and OOF proba for Brier; accuracy at fixed 0.5 threshold; OOF Brier = mean((oof_proba - y)^2).",
+    "std_convention": "std_pop = population ddof=0 primary (matches project); std_sample ddof=1 also recorded; paired-t uses sample std ddof=1: t = mean(diff)/(sd(ddof=1)/sqrt(5)) on same 5 group folds (candidate - reference).",
+    "fits": "5 candidates x 2 CV schemes x 5 folds = 50 fits",
+    "seeds_fixed": "random_state=42 everywhere (models + both splitters)",
+    "methodology_note_zip": "workspace-01a09c9e-c970-7b6f-960d-958290a05209.zip exists in repo root and per top-level listing contains a titanic-ml/ reference implementation; listed only, never extracted/opened for modeling.",
+    "forbidden_respected": "No test labels/inference; no reading of ANY predictions/submission CSV (workspace zip, C:/Users/DELL/Downloads, D:/Downloads, ashish/shalabh/PRASHANTTZ repos); no github raw fetches of predictions; no Kaggle API; no web label search; board scores never used in any gate or selection comparison."
+  },
+  "candidates_verbatim": {
+    "ref_tuned_RF": "RandomForestClassifier(n_estimators=500, max_depth=12, min_samples_split=5, min_samples_leaf=1, max_features=None, random_state=42, n_jobs=-1) via src.preprocessing.build_full_pipeline production set scale_numeric=False",
+    "RF_C1style_lean": "SAME tuned-RF hyperparams as reference but LEAN subset via src.analysis.build_pipeline_with_features numeric [Age,Fare,SibSp,Parch] + categorical [Pclass,Sex,Embarked,Title] (raw+title philosophy, no ticket/family/cabin engineering)",
+    "LR_C05": "LogisticRegression(C=0.5, max_iter=1000, random_state=42) via src.preprocessing.build_full_pipeline production set scale_numeric=True",
+    "GB_tuned": "GradientBoostingClassifier(learning_rate=0.1, max_depth=2, n_estimators=300, subsample=0.8, random_state=42) via src.preprocessing.build_full_pipeline production set scale_numeric=False",
+    "RF_simple": "RandomForestClassifier(n_estimators=300, max_depth=8, min_samples_leaf=2, random_state=42, n_jobs=-1) [min_samples_split and max_features at sklearn defaults] via src.preprocessing.build_full_pipeline production set scale_numeric=False"
+  },
+  "results": {
+    "ref_tuned_RF": {
+      "random_cv": {
+        "mean": 0.843977151465696,
+        "std_pop": 0.01412286875015432,
+        "std_sample": 0.015789847281326277,
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8202247191011236,
+          0.848314606741573,
+          0.8539325842696629
+        ],
+        "oof_brier": 0.12402097661959521
+      },
+      "group_cv": {
+        "mean": 0.7990811362702218,
+        "std_pop": 0.015058904813936414,
+        "std_sample": 0.016836367415330324,
+        "folds": [
+          0.8100558659217877,
+          0.8156424581005587,
+          0.807909604519774,
+          0.7808988764044944,
+          0.7808988764044944
+        ],
+        "oof_brier": 0.1440110095161742
+      }
+    },
+    "RF_C1style_lean": {
+      "random_cv": {
+        "mean": 0.8405875337392505,
+        "std_pop": 0.020532192857351264,
+        "std_sample": 0.022955689478086534,
+        "folds": [
+          0.8770949720670391,
+          0.8426966292134831,
+          0.8146067415730337,
+          0.8370786516853933,
+          0.8314606741573034
+        ],
+        "oof_brier": 0.12472768631272663
+      },
+      "group_cv": {
+        "mean": 0.8215282927398416,
+        "std_pop": 0.02629917596281019,
+        "std_sample": 0.029403372602536032,
+        "folds": [
+          0.8547486033519553,
+          0.8212290502793296,
+          0.8361581920903954,
+          0.7752808988764045,
+          0.8202247191011236
+        ],
+        "oof_brier": 0.13901328147892444
+      }
+    },
+    "LR_C05": {
+      "random_cv": {
+        "mean": 0.828278199736363,
+        "std_pop": 0.013628335449546291,
+        "std_sample": 0.015236942242677829,
+        "folds": [
+          0.8324022346368715,
+          0.8370786516853933,
+          0.8033707865168539,
+          0.8258426966292135,
+          0.8426966292134831
+        ],
+        "oof_brier": 0.12746921515724446
+      },
+      "group_cv": {
+        "mean": 0.8305485130614476,
+        "std_pop": 0.022085319342501512,
+        "std_sample": 0.02469213767731217,
+        "folds": [
+          0.8491620111731844,
+          0.8044692737430168,
+          0.8418079096045198,
+          0.8033707865168539,
+          0.8539325842696629
+        ],
+        "oof_brier": 0.13240645554404473
+      }
+    },
+    "GB_tuned": {
+      "random_cv": {
+        "mean": 0.8428535559600778,
+        "std_pop": 0.016826493362689092,
+        "std_sample": 0.018812591490960918,
+        "folds": [
+          0.8603351955307262,
+          0.8370786516853933,
+          0.8258426966292135,
+          0.8258426966292135,
+          0.8651685393258427
+        ],
+        "oof_brier": 0.11970361436557454
+      },
+      "group_cv": {
+        "mean": 0.8047182287172754,
+        "std_pop": 0.0225420092952231,
+        "std_sample": 0.02520273256677549,
+        "folds": [
+          0.8268156424581006,
+          0.8044692737430168,
+          0.8305084745762712,
+          0.7696629213483146,
+          0.7921348314606742
+        ],
+        "oof_brier": 0.1437605636493534
+      }
+    },
+    "RF_simple": {
+      "random_cv": {
+        "mean": 0.8383717280773336,
+        "std_pop": 0.00681663198731738,
+        "std_sample": 0.007621226250620573,
+        "folds": [
+          0.8491620111731844,
+          0.8426966292134831,
+          0.8314606741573034,
+          0.8314606741573034,
+          0.8370786516853933
+        ],
+        "oof_brier": 0.12156037899725067
+      },
+      "group_cv": {
+        "mean": 0.8092314419493387,
+        "std_pop": 0.01513774383336037,
+        "std_sample": 0.01692451211868602,
+        "folds": [
+          0.8156424581005587,
+          0.7988826815642458,
+          0.8305084745762712,
+          0.7865168539325843,
+          0.8146067415730337
+        ],
+        "oof_brier": 0.13442629622699026
+      }
+    }
+  },
+  "rankings": {
+    "by_group_mean_desc": [
+      "LR_C05",
+      "RF_C1style_lean",
+      "RF_simple",
+      "GB_tuned",
+      "ref_tuned_RF"
+    ],
+    "by_random_mean_desc": [
+      "ref_tuned_RF",
+      "GB_tuned",
+      "RF_C1style_lean",
+      "RF_simple",
+      "LR_C05"
+    ],
+    "group_means": {
+      "ref_tuned_RF": 0.7990811362702218,
+      "RF_C1style_lean": 0.8215282927398416,
+      "LR_C05": 0.8305485130614476,
+      "GB_tuned": 0.8047182287172754,
+      "RF_simple": 0.8092314419493387
+    },
+    "random_means": {
+      "ref_tuned_RF": 0.843977151465696,
+      "RF_C1style_lean": 0.8405875337392505,
+      "LR_C05": 0.828278199736363,
+      "GB_tuned": 0.8428535559600778,
+      "RF_simple": 0.8383717280773336
+    }
+  },
+  "selection": {
+    "group_winner": "LR_C05",
+    "group_winner_group_mean": 0.8305485130614476,
+    "random_winner": "ref_tuned_RF",
+    "random_winner_random_mean": 0.843977151465696,
+    "differs": true,
+    "note": "Complete reversal: reference is 1st on random but 5th (last) on group; LR is 1st on group but 5th (last) on random. Group-CV-first selection picks a different model than random-CV-first selection did."
+  },
+  "paired_t_vs_ref_on_group_folds": {
+    "ref_tuned_RF": {
+      "diffs_vs_ref_group": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "mean_diff_vs_ref_group": 0.0,
+      "sd_diff_ddof1": 0.0,
+      "paired_t_vs_ref_group": 0.0,
+      "n": 5
+    },
+    "RF_C1style_lean": {
+      "diffs_vs_ref_group": [
+        0.04469273743016766,
+        0.005586592178770888,
+        0.02824858757062143,
+        -0.005617977528089901,
+        0.0393258426966292
+      ],
+      "mean_diff_vs_ref_group": 0.022447156469619856,
+      "sd_diff_ddof1": 0.021710267722652832,
+      "paired_t_vs_ref_group": 2.3119644773091235,
+      "n": 5
+    },
+    "LR_C05": {
+      "diffs_vs_ref_group": [
+        0.03910614525139666,
+        -0.011173184357541888,
+        0.03389830508474578,
+        0.022471910112359494,
+        0.0730337078651685
+      ],
+      "mean_diff_vs_ref_group": 0.03146737679122571,
+      "sd_diff_ddof1": 0.030377442086017305,
+      "paired_t_vs_ref_group": 2.316297513778093,
+      "n": 5
+    },
+    "GB_tuned": {
+      "diffs_vs_ref_group": [
+        0.016759776536312887,
+        -0.011173184357541888,
+        0.02259887005649719,
+        -0.011235955056179803,
+        0.011235955056179803
+      ],
+      "mean_diff_vs_ref_group": 0.005637092447053638,
+      "sd_diff_ddof1": 0.01589062932856222,
+      "paired_t_vs_ref_group": 0.7932298744396588,
+      "n": 5
+    },
+    "RF_simple": {
+      "diffs_vs_ref_group": [
+        0.005586592178770999,
+        -0.016759776536312887,
+        0.02259887005649719,
+        0.005617977528089901,
+        0.0337078651685393
+      ],
+      "mean_diff_vs_ref_group": 0.0101503056791169,
+      "sd_diff_ddof1": 0.019205776268993127,
+      "paired_t_vs_ref_group": 1.1817680875284635,
+      "n": 5
+    }
+  },
+  "gates_group_winner_LR_C05": {
+    "gate1_random_cost_le_0_0067": {
+      "value": 0.015698951729333,
+      "threshold": 0.0067,
+      "pass": false,
+      "reason": "ref_random 0.843977151465696 - LR_random 0.828278199736363 = 0.015699 > 0.0067 -> FAIL; LR costs ~1.57 pts of random-CV accuracy vs reference."
+    },
+    "gate2_paired_t_ge_2_0": {
+      "value": 2.316297513778093,
+      "threshold": 2.0,
+      "pass": true,
+      "detail": {
+        "diffs_vs_ref_group": [
+          0.03910614525139666,
+          -0.011173184357541888,
+          0.03389830508474578,
+          0.022471910112359494,
+          0.0730337078651685
+        ],
+        "mean_diff_vs_ref_group": 0.03146737679122571,
+        "sd_diff_ddof1": 0.030377442086017305,
+        "paired_t_vs_ref_group": 2.316297513778093,
+        "n": 5
+      },
+      "reason": "Mean group diff +0.031467 with sd_ddof1 0.030377 gives t=2.3163 >= 2.0 -> PASS on identical 5 group folds."
+    },
+    "gate3_brier_not_worse_by_gt_0_002": {
+      "value_group_delta": -0.011604553972129478,
+      "value_random_delta_for_transparency": 0.003448238537649251,
+      "threshold": 0.002,
+      "pass": true,
+      "reason": "Group-OOF Brier LR 0.132406 - ref 0.144011 = -0.011605 <= 0.002 (LR better by ~0.0116) -> PASS; gate uses group Brier (selection domain); random Brier delta +0.003448 reported for transparency only."
+    }
+  },
+  "verdict": "RETAIN",
+  "verdict_rationale": "Group winner LR_C05 selected solely by group mean (0.830549 > C1-lean 0.821528 > simple 0.809231 > GB 0.804718 > ref 0.799081), differing from random winner ref_tuned_RF. ADOPT requires ALL three gates; gate1 FAILS (random cost 0.015699 > 0.0067) while gate2 passes (t=2.3163) and gate3 passes (group Brier delta -0.011605). Hence RETAIN: record group ranking as evidence only, do not adopt LR as new submission pipeline; no submission.csv generated.",
+  "evidence_only_notes": {
+    "RF_C1style_lean_passes_all_gates_but_not_winner": "For transparency: C1-lean group mean 0.821528 (2nd), random cost 0.003390 PASS, paired-t 2.3120 PASS, group Brier delta -0.004998 PASS; it would pass all gates but is NOT the group winner so cannot be adopted under pre-committed group-winner rule.",
+    "reference_reproduction": "Recomputed ref random mean 0.843977151465696 and group mean 0.7990811362702218 match the stated references exactly; group folds match reports/gap_groupcv.json within 1e-12; confirms identical splits and fair paired comparison."
+  },
+  "external_context_one_sentence_max": "External context only (never used in gates/selection): an independent rebuild was reported to score higher externally than our pipeline, which motivated this inside-codebase group-CV selection test.",
+  "files_written": [
+    "reports/gap9_sel.json",
+    "reports/figures/11x_sel.png"
+  ],
+  "compliance": {
+    "touched_only_allowed": true,
+    "no_test_labels_or_inference": true,
+    "no_predictions_csv_read": true,
+    "no_src_configs_notebooks_edits": true,
+    "no_experiment_results_touch": true,
+    "no_submission_generated": true,
+    "no_public_score_tuning": true,
+    "new_files_only": [
+      "reports/gap9_*",
+      "reports/figures/11x_*"
+    ]
+  }
+}
